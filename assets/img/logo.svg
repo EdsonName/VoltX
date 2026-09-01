@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 80" role="img" aria-label="VolX logo">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#f97316"/>
+    </linearGradient>
+  </defs>
+  <rect width="220" height="80" rx="14" fill="#111827"/>
+  <g transform="translate(18 16)">
+    <path d="M22 0L44 0L44 18L22 18L22 0ZM0 18L22 18L22 36L0 36L0 18ZM22 18L44 18L44 36L22 36L22 18ZM0 36L22 36L22 54L0 54L0 36ZM22 36L44 36L44 54L22 54L22 36Z" fill="url(#g)"/>
+    <path d="M58 10h18l14 24 14-24h18v44h-14V31l-10 18h-8l-10-18v23H58z" fill="#ffffff"/>
+  </g>
+</svg>

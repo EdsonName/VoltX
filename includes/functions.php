@@ -53,6 +53,21 @@ function pegar_servicos() {
     return $result->fetch_all(MYSQLI_ASSOC);
 }
 
+function pegar_todos_servicos() {
+    global $mysqli;
+    $result = $mysqli->query('SELECT * FROM servicos ORDER BY criado_em DESC, nome');
+    return $result->fetch_all(MYSQLI_ASSOC);
+}
+
+function token_csrf() {
+    if (empty($_SESSION['csrf_token'])) $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    return $_SESSION['csrf_token'];
+}
+
+function validar_csrf($token) {
+    return isset($_SESSION['csrf_token']) && is_string($token) && hash_equals($_SESSION['csrf_token'], $token);
+}
+
 function pegar_servico($id) {
     global $mysqli;
     $sql = 'SELECT * FROM servicos WHERE id = ? AND ativo = 1';

@@ -19,6 +19,16 @@ document.addEventListener('DOMContentLoaded', function() {
             link.classList.add('active');
         }
     });
+
+    document.querySelectorAll('[data-back-fallback]').forEach(botao => {
+        botao.addEventListener('click', event => {
+            const origem = document.referrer ? new URL(document.referrer) : null;
+            if (origem && origem.origin === window.location.origin && window.history.length > 1) {
+                event.preventDefault();
+                window.history.back();
+            }
+        });
+    });
     
     // Validação de formulários
     const forms = document.querySelectorAll('form');

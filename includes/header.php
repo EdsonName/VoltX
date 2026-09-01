@@ -46,3 +46,16 @@ require_once __DIR__ . '/../includes/auth.php';
         </div>
     </header>
     <main>
+    <?php
+    $caminho_atual = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+    if ($caminho_atual !== '/' && $caminho_atual !== '/index.php'):
+        if (str_starts_with($caminho_atual, '/admin/') && !in_array($caminho_atual, ['/admin/', '/admin/index.php'], true)) {
+            $destino_voltar = '/admin/';
+        } elseif (str_starts_with($caminho_atual, '/dashboard/') && !in_array($caminho_atual, ['/dashboard/', '/dashboard/index.php'], true)) {
+            $destino_voltar = '/dashboard/';
+        } else {
+            $destino_voltar = '/';
+        }
+    ?>
+        <div class="container back-bar"><a href="<?php echo $destino_voltar; ?>" class="back-button" data-back-fallback="<?php echo $destino_voltar; ?>">← <span>Voltar</span></a></div>
+    <?php endif; ?>

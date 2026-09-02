@@ -83,6 +83,9 @@ CREATE TABLE profissionais (
     usuario_id INT UNIQUE NOT NULL,
     titulo_profissional VARCHAR(160) NOT NULL,
     bio TEXT,
+    marca VARCHAR(180) UNIQUE,
+    mei BOOLEAN DEFAULT FALSE,
+    cnpj VARCHAR(14) UNIQUE,
     categoria_principal VARCHAR(100) NOT NULL,
     cidade VARCHAR(120) NOT NULL,
     uf CHAR(2) NOT NULL,
@@ -97,20 +100,28 @@ CREATE TABLE profissionais (
 );
 
 ## Tabela: ofertas_profissionais
+CREATE TABLE categorias_profissionais (id INT AUTO_INCREMENT PRIMARY KEY, profissional_id INT NOT NULL, nome VARCHAR(100) NOT NULL, criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP, UNIQUE KEY uq_categoria_profissional(profissional_id,nome), FOREIGN KEY(profissional_id) REFERENCES profissionais(id) ON DELETE CASCADE);
 CREATE TABLE ofertas_profissionais (
     id INT AUTO_INCREMENT PRIMARY KEY,
     profissional_id INT NOT NULL,
     nome VARCHAR(180) NOT NULL,
     categoria VARCHAR(100) NOT NULL,
+    categoria_id INT,
     descricao TEXT NOT NULL,
+    imagem_url VARCHAR(1000),
     preco_inicial DECIMAL(10,2),
     unidade_preco VARCHAR(60) DEFAULT 'por serviço',
+    nota_media DECIMAL(3,1) NOT NULL DEFAULT 10.0,
+    total_avaliacoes INT NOT NULL DEFAULT 0,
     ativo BOOLEAN DEFAULT TRUE,
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (profissional_id) REFERENCES profissionais(id) ON DELETE CASCADE,
+    FOREIGN KEY (categoria_id) REFERENCES categorias_profissionais(id) ON DELETE SET NULL,
     INDEX idx_ofertas_busca (categoria, ativo)
 );
+
+CREATE TABLE avaliacoes_servicos_profissionais (id INT AUTO_INCREMENT PRIMARY KEY, oferta_id INT NOT NULL, cliente_id INT NOT NULL, nota DECIMAL(3,1) NOT NULL, comentario TEXT, criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP, atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, UNIQUE KEY uq_avaliacao_servico_cliente(oferta_id,cliente_id), FOREIGN KEY(oferta_id) REFERENCES ofertas_profissionais(id) ON DELETE CASCADE, FOREIGN KEY(cliente_id) REFERENCES usuarios(id) ON DELETE CASCADE, CHECK(nota>=0 AND nota<=10));
 
 ## Tabelas: chat
 CREATE TABLE conversas (

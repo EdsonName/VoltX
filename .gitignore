@@ -33,6 +33,9 @@ assets/uploads/posts/*
 !assets/uploads/ads/
 assets/uploads/ads/*
 !assets/uploads/ads/.gitkeep
+!assets/uploads/offerings/
+assets/uploads/offerings/*
+!assets/uploads/offerings/.gitkeep
 
 # IDE and operating system
 .idea/

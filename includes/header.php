@@ -10,6 +10,9 @@ require_once __DIR__ . '/../includes/auth.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($titulo_pagina) ? $titulo_pagina . ' - VolX' : 'VolX - Seu Serviço de Eletricidade'; ?></title>
     <link rel="stylesheet" href="/assets/css/style.css">
+    <?php foreach (($estilos_pagina ?? []) as $estilo): ?>
+        <link rel="stylesheet" href="<?php echo htmlspecialchars($estilo, ENT_QUOTES, 'UTF-8'); ?>">
+    <?php endforeach; ?>
     <?php if (usuario_eh_admin()): ?>
         <link rel="stylesheet" href="/assets/css/admin.css">
     <?php elseif (usuario_autenticado()): ?>

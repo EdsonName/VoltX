@@ -31,5 +31,8 @@
         </div>
     </footer>
     <script src="/assets/js/main.js"></script>
+    <?php foreach (($scripts_pagina ?? []) as $script): ?>
+        <script src="<?php echo htmlspecialchars($script, ENT_QUOTES, 'UTF-8'); ?>"></script>
+    <?php endforeach; ?>
 </body>
 </html>

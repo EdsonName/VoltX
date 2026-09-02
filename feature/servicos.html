@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nossos Serviços | VolX - Edson Silva</title>
+    <!-- Font Awesome para Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #0a0a0c;
+            --card-bg: #141418;
+            --card-hover: #1c1c22;
+            --accent-yellow: #ffc107;
+            --accent-orange: #ff9800;
+            --accent-wsp: #25D366;
+            --accent-wsp-hover: #20ba5a;
+            --text-main: #ffffff;
+            --text-muted: #a0a0ab;
+            --border-color: #26262e;
+            --radius: 12px;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        /* Cabeçalho da Seção */
+        .section-header {
+            margin-bottom: 30px;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .section-header h1 {
+            font-size: 2rem;
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            margin-top: 4px;
+            font-size: 0.95rem;
+        }
+
+        .yellow-bar {
+            width: 50px;
+            height: 3px;
+            background-color: var(--accent-yellow);
+            border-radius: 2px;
+        }
+
+        /* Grade de Serviços Compacta */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            margin-bottom: 50px;
+        }
+
+        /* Card Estilo Base */
+        .service-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: cardAppear 0.6s ease-out forwards;
+        }
+
+        /* Delays para animação dos cards em cascata */
+        .service-card:nth-child(1) { animation-delay: 0.1s; }
+        .service-card:nth-child(2) { animation-delay: 0.2s; }
+        .service-card:nth-child(3) { animation-delay: 0.3s; }
+        .service-card:nth-child(4) { animation-delay: 0.4s; }
+        .service-card:nth-child(5) { animation-delay: 0.5s; }
+        .service-card:nth-child(6) { animation-delay: 0.6s; }
+        .service-card:nth-child(7) { animation-delay: 0.7s; }
+        .service-card:nth-child(8) { animation-delay: 0.8s; }
+
+        .service-card:hover {
+            transform: translateY(-8px) scale(1.01);
+            border-color: var(--accent-yellow);
+            box-shadow: 0 12px 25px rgba(255, 193, 7, 0.12);
+        }
+
+        /* Imagem Reduzida */
+        .card-img-wrapper {
+            position: relative;
+            width: 100%;
+            height: 140px;
+            overflow: hidden;
+        }
+
+        .card-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .service-card:hover .card-img-wrapper img {
+            transform: scale(1.1);
+        }
+
+        .card-img-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.1), var(--card-bg));
+        }
+
+        /* Conteúdo do Card */
+        .card-body {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        /* Card Destaque (Emergência) */
+        .service-card.emergency {
+            border-color: rgba(255, 152, 0, 0.4);
+        }
+        .service-card.emergency:hover {
+            border-color: var(--accent-orange);
+            box-shadow: 0 12px 25px rgba(255, 152, 0, 0.2);
+        }
+
+        /* Badges */
+        .badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 14px;
+            text-transform: uppercase;
+            z-index: 2;
+        }
+
+        .badge-yellow {
+            background-color: var(--accent-yellow);
+            color: #000;
+        }
+
+        .badge-orange {
+            background-color: var(--accent-orange);
+            color: #000;
+            animation: pulse 1.8s infinite;
+        }
+
+        .card-title {
+            font-size: 1.05rem;
+            margin: 0 0 6px 0;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title i {
+            color: var(--accent-yellow);
+            font-size: 0.95rem;
+        }
+
+        .card-price {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--accent-yellow);
+            margin-bottom: 8px;
+            background: rgba(255, 193, 7, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .card-description {
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            line-height: 1.4;
+            margin-bottom: 12px;
+        }
+
+        .service-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 14px 0;
+        }
+
+        .service-list li {
+            color: #d1d1d6;
+            font-size: 0.8rem;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .service-list li i {
+            color: var(--accent-yellow);
+            font-size: 0.7rem;
+        }
+
+        /* ESTILO DOS BOTÕES ESTILO WHATSAPP (VERDE COM ANIMAÇÕES) */
+        .btn-card, .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 10px;
+            background-color: var(--accent-wsp);
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.88rem;
+            box-sizing: border-box;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2);
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .btn-card i, .btn-action i {
+            font-size: 1.05rem;
+            transition: transform 0.3s ease;
+        }
+
+        /* Hover no Botão Verde */
+        .btn-card:hover, .btn-action:hover {
+            background-color: var(--accent-wsp-hover);
+            transform: scale(1.03);
+            box-shadow: 0 6px 18px rgba(37, 211, 102, 0.4);
+            color: #ffffff;
+        }
+
+        /* Animação do Ícone no Hover */
+        .btn-card:hover i, .btn-action:hover i {
+            transform: rotate(-10deg) scale(1.15);
+        }
+
+        /* Clique/Active no Botão */
+        .btn-card:active, .btn-action:active {
+            transform: scale(0.96);
+            box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
+        }
+
+        /* Botão para Alerta de Urgência (Laranja mantido para contraste de emergência) */
+        .btn-action.btn-urgente {
+            background-color: var(--accent-orange);
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.25);
+        }
+        .btn-action.btn-urgente:hover {
+            background-color: #e68a00;
+            box-shadow: 0 6px 18px rgba(255, 152, 0, 0.4);
+        }
+
+        /* Widgets Interativos Compactos */
+        .interactive-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .widget-card {
+            background: linear-gradient(145deg, #16161c, #101014);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 20px;
+            transition: border-color 0.3s ease;
+        }
+
+        .widget-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .widget-card h3 {
+            margin-top: 0;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 10px;
+            background: #0a0a0c;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 0.85rem;
+            box-sizing: border-box;
+        }
+
+        /* Keyframes */
+        @keyframes cardAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.7); }
+            70% { transform: scale(1.04); box-shadow: 0 0 0 8px rgba(255, 152, 0, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 152, 0, 0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="section-header">
+        <h1>Nossos Serviços</h1>
+        <p>Atendimento rápido em Brasília e Entorno Sul (Valparaíso, Luziânia, Novo Gama e região)</p>
+        <div class="yellow-bar"></div>
+    </div>
+
+    <!-- Grade de 8 Cards Menores -->
+    <div class="services-grid">
+        
+        <!-- Card 1 -->
+        <div class="service-card emergency">
+            <span class="badge badge-orange">Atendimento 24h</span>
+            <div class="card-img-wrapper">
+                <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=500&q=80" alt="Emergência Elétrica">
+                <div class="card-img-overlay"></div>
+            </div>
+            <div class="card-body">
+                <div>
+                    <h2 class="card-title"><i class="fa-solid fa-bolt"></i> Emergência 24h</h2>
+                    <div class="card-price">Visita a partir de R$ 120</div>
+                    <p class="card-description">Curto-circuito, disjuntor caindo e pane elétrica urgente.</p>
+                    <ul class="service-list">
+                        <li><i class="fa-solid fa-check"></i> Troca imediata de disjuntor</li>
+                        <li><i class="fa-solid fa-check"></i> Reparo de fiação em curto</li>
+                    </ul>
+                </div>
+                <a href="https://wa.me/5561981044986?text=Olá%20Edson,%20preciso%20de%20atendimento%20urgente%20de%20EMERGÊNCIA!" class="btn-card" target="_blank">
+                    <i class="fa-brands fa-whatsapp"></i> Chamar no WhatsApp
+                </a>
+            </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="service-card">
+            <span class="badge badge-yellow">Segurança</span>
+            <div class="card-img-wrapper">
+                <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=500&q=80" alt="Quadro Elétrico">
+                <div class="card-img-overlay"></div>
+            </div>
+            <div class="card-body">
+                <div>
+                    <h2 class="card-title"><i class="fa-solid fa-gears"></i> Quadros Elétricos</h2>
+                    <div class="card-price">A partir de R$ 350</div>
+                    <p class="card-description">Montagem de QDC, disjuntores, DR e proteção DPS.</p>
+                    <ul class="service-list">
+                        <li><i class="fa-solid fa-check"></i> Balanceamento de fases</li>
+                        <li><i class="fa-solid fa-check"></i> Proteção contra raios</li>
+                    </ul>
+                </div>
+                <a href="https://wa.me/5561981044986?text=Olá%20Edson,%20quero%20um%20orçamento%20para%20Quadro%20de%20Distribuição." class="btn-card" target="_blank">
+                    <i class="fa-brands fa-whatsapp"></i> Pedir Orçamento
+                </a>
+            </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="service-card">
+            <span class="badge badge-yellow">Mais Pedido</span>
+            <div class="card-img-wrapper">
+                <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=500&q=80" alt="Chuveiro Elétrico">
+                <div class="card-img-overlay"></div>
+            </div>
+            <div class="card-body">
+                <div>
+                    <h2 class="card-title"><i class="fa-solid fa-shower"></i> Chuveiros & 220V</h2>
+                    <div class="card-price">Mão de obra: R$ 80 - R$ 180</div>
+                    <p class="card-description">Instalação de chuveiros e conectores de alta potência.</p>
+                    <ul class="service-list">
+                        <li><i class="fa-solid fa-check"></i> Fiação reforçada e dedicada</li>
+                        <li><i class="fa-solid fa-check"></i> Troca de fiação queimada</li>
+                    </ul>
+                </div>
+                <a href="https://wa.me/5561981044986?text=Olá%20Edson,%20preciso%20instalar/reparar%20meu%20chuveiro." class="btn-card" target="_blank">
+                    <i class="fa-brands fa-whatsapp"></i> Pedir Orçamento
+                </a>
+            </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="service-card">
+            <div class="card-img-wrapper">
+                <img src="https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=500&q=80" alt="Iluminação LED">
+                <div class="card-img-overlay"></div>
+            </div>
+            <div class="card-body">
+                <div>
+                    <h2 class="card-title"><i class="fa-solid fa-lightbulb"></i> LED & Iluminação</h2>
+                    <div class="card-price">A partir de R$ 45 / ponto</div>
+                    <p class="card-description">Fitas LED, pendentes, lustres e perfis no gesso.</p>
+                    <ul class="service-list">
+                        <li><i class="fa-solid fa-check"></i> Perfil de LED e spots</li>
+                        <li><i class="fa-solid fa-check"></i> Sensores de presença</li>
+                    </ul>
+                </div>
+                <a href="https://wa.me/5561981044986?text=Olá%20Edson,%20gostaria%20de%20orçamento%20para%20iluminação." class="btn-card" target="_blank">
+                    <i class="fa-brands fa-whatsapp"></i> Pedir Orçamento
+                </a>
+            </div>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="service-card">
+            <div class="card-img-wrapper">
+                <img src="https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?auto=format&fit=crop&w=500&q=80" alt="Fiação Elétrica">
+                <div class="card-img-overlay"></div>
+            </div>
+            <div class="card-body">
+                <div>
+                    <h2 class="card-title"><i class="fa-solid fa-plug-circle-bolt"></i> Troca de Fiação</h2>
+                    <div class="card-price">Média R$ 60 / ponto</div>
+                    <p class="card-description">Reforma elétrica completa para casas e apartamentos.</p>
+                    <ul class="service-list">
+                        <li><i class="fa-solid fa-check"></i> Redimensionamento total</li>
+                        <li><i class="fa-solid fa-check"></i> Adequação à norma NBR 5410</li>
+                    </ul>
+                </div>
+                <a href="https://wa.me/5561981044986?text=Olá%20Edson,%20preciso%20de%20um%20orçamento%20para%20troca%20de%20fiação." class="btn-card" target="_blank">
+                    <i class="fa-brands fa-whatsapp"></i> Pedir Orçamento
+                </a>
+            </div>
+        </div>
+
+        <!-- Card 6 -->
+        <div class="service-card">
+            <div class="card-img-wrapper">
+                <img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=500&q=80" alt="Padrão de Entrada">
+                <div class="card-img-overlay"></div>
+            </div>
+            <div class="card-body">
+                <div>
+                    <h2 class="card-title"><i class="fa-solid fa-tower-cell"></i> Padrão de Entrada</h2>
+                    <div class="card-price">A partir de R$ 450</div>
+                    <p class="card-description">Instalação e padrão Neoenergia (DF) / Equatorial (GO).</p>
+                    <ul class="service-list">
+                        <li><i class="fa-solid fa-check"></i> Aumento de carga (mono/tri)</li>
+                        <li><i class="fa-solid fa-check"></i> Montagem de caixas de luz</li>
+                    </ul>
+                </div>
+                <a href="https://wa.me/5561981044986?text=Olá%20Edson,%20preciso%20de%20serviço%20de%20Padrão%20de%20Entrada." class="btn-card" target="_blank">
+                    <i class="fa-brands fa-whatsapp"></i> Pedir Orçamento
+                </a>
+            </div>
+        </div>
+
+        <!-- Card 7 -->
+        <div class="service-card">
+            <div class="card-img-wrapper">
+                <img src="https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=500&q=80" alt="Ar Condicionado">
+                <div class="card-img-overlay"></div>
+            </div>
+            <div class="card-body">
+                <div>
+                    <h2 class="card-title"><i class="fa-solid fa-snowflake"></i> Ar-Condicionado</h2>
+                    <div class="card-price">A partir de R$ 150</div>
+                    <p class="card-description">Circuito elétrico exclusivo 220V com disjuntor próprio.</p>
+                    <ul class="service-list">
+                        <li><i class="fa-solid fa-check"></i> Pontos para Split todos os BTUs</li>
+                        <li><i class="fa-solid fa-check"></i> Disjuntor individual no quadro</li>
+                    </ul>
+                </div>
+                <a href="https://wa.me/5561981044986?text=Olá%20Edson,%20preciso%20instalar%20um%20ponto%20de%20ar-condicionado." class="btn-card" target="_blank">
+                    <i class="fa-brands fa-whatsapp"></i> Pedir Orçamento
+                </a>
+            </div>
+        </div>
+
+        <!-- Card 8 -->
+        <div class="service-card">
+            <div class="card-img-wrapper">
+                <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=500&q=80" alt="Elétrica Comercial">
+                <div class="card-img-overlay"></div>
+            </div>
+            <div class="card-body">
+                <div>
+                    <h2 class="card-title"><i class="fa-solid fa-store"></i> Elétrica Comercial</h2>
+                    <div class="card-price">Sob Avaliação / Contrato</div>
+                    <p class="card-description">Manutenção ágil para lojas, empresas e galpões.</p>
+                    <ul class="service-list">
+                        <li><i class="fa-solid fa-check"></i> Infraestrutura aparente</li>
+                        <li><i class="fa-solid fa-check"></i> Testes de carga e laudos</li>
+                    </ul>
+                </div>
+                <a href="https://wa.me/5561981044986?text=Olá%20Edson,%20preciso%20de%20manutenção%20elétrica%20comercial." class="btn-card" target="_blank">
+                    <i class="fa-brands fa-whatsapp"></i> Pedir Orçamento
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Widgets Interativos -->
+    <div class="interactive-section">
+        
+        <div class="widget-card">
+            <h3><i class="fa-solid fa-calculator" style="color:var(--accent-yellow)"></i> Estimador Rápido</h3>
+            <div class="form-group">
+                <label>Sua Região</label>
+                <select id="calc-cidade" class="form-control">
+                    <option value="Valparaíso de Goiás">Valparaíso de Goiás</option>
+                    <option value="Luziânia / Ocidental / Novo Gama">Luziânia / Ocidental / Novo Gama</option>
+                    <option value="Brasília / Plano Piloto">Brasília (Plano Piloto)</option>
+                    <option value="Ceilândia / Taguatinga / Samambaia">Ceilândia / Taguatinga / Samambaia</option>
+                    <option value="Outra Região DF/GO">Outra Região</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Serviço Desejado</label>
+                <select id="calc-servico" class="form-control">
+                    <option value="Chuveiro / Tomadas 220V">Chuveiro / Tomadas 220V</option>
+                    <option value="Quadro Elétrico">Quadro Elétrico</option>
+                    <option value="Troca de Fiação">Troca de Fiação</option>
+                    <option value="Iluminação LED">Iluminação LED</option>
+                    <option value="Emergência 24h">Emergência 24h</option>
+                </select>
+            </div>
+            <button onclick="gerarOrcamentoWhatsapp()" class="btn-action">
+                <i class="fa-brands fa-whatsapp"></i> Simular Orçamento
+            </button>
+        </div>
+
+        <div class="widget-card">
+            <h3><i class="fa-solid fa-triangle-exclamation" style="color:var(--accent-orange)"></i> Diagnóstico de Urgência</h3>
+            <div class="form-group">
+                <label>Qual o sintoma elétrico?</label>
+                <select id="diag-sintoma" class="form-control">
+                    <option value="Disjuntor desarmando sem parar">Disjuntor desarmando direto</option>
+                    <option value="Cheiro de fumaça / queimado">Cheiro de queimado no ambiente</option>
+                    <option value="Metade da casa sem energia">Metade da casa sem energia</option>
+                    <option value="Tomada faiscando / esquentando">Tomada esquentando ou faiscando</option>
+                </select>
+            </div>
+            <button onclick="enviarDiagnostico()" class="btn-action btn-urgente">
+                <i class="fa-brands fa-whatsapp"></i> Enviar Alerta Urgente
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const whatsappEdson = "5561981044986";
+
+    function gerarOrcamentoWhatsapp() {
+        const cidade = document.getElementById('calc-cidade').value;
+        const servico = document.getElementById('calc-servico').value;
+        
+        const texto = `Olá Edson Silva! Fiz uma simulação no site VolX:%0A- *Região:* ${cidade}%0A- *Serviço:* ${servico}%0AGostaria de saber a estimativa de valor.`;
+        window.open(`https://wa.me/${whatsappEdson}?text=${texto}`, '_blank');
+    }
+
+    function enviarDiagnostico() {
+        const sintoma = document.getElementById('diag-sintoma').value;
+        
+        const texto = `*ALERTA URGENTE - VOLX*%0AOlá Edson, estou com o seguinte problema: *${sintoma}*. Pode me atender agora?`;
+        window.open(`https://wa.me/${whatsappEdson}?text=${texto}`, '_blank');
+    }
+</script>
+
+</body>
+</html>

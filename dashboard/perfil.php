@@ -1,72 +1,21 @@
 <?php
-// dashboard/perfil.php
-// Perfil do cliente
-$titulo_pagina = 'Meu Perfil';
-require_once __DIR__ . '/../includes/header.php';
-require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../includes/functions.php';
-require_once __DIR__ . '/../config/database.php';
-
-verificarAutenticacao();
-
-$usuario = pegar_usuario($_SESSION['usuario_id']);
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $erro = null;
-    $nome = normalizar_nome($_POST['nome'] ?? '');
-    $email = normalizar_email($_POST['email'] ?? '');
-    $telefone = normalizar_telefone_br($_POST['telefone'] ?? '');
-    $foto = $usuario['foto_perfil'] ?? '';
-    if (!validar_csrf($_POST['csrf_token'] ?? '')) $erro='A sessão expirou.';
-    elseif (!validar_email($email) || !in_array(strlen($telefone),[10,11],true)) $erro='Confira o e-mail e o telefone.';
-    if (!$erro && !empty($_FILES['foto_perfil']['name'])) {
-        $mime=(new finfo(FILEINFO_MIME_TYPE))->file($_FILES['foto_perfil']['tmp_name']);$ext=['image/jpeg'=>'jpg','image/png'=>'png','image/webp'=>'webp'];
-        if (!isset($ext[$mime])) $erro='Envie uma foto JPG, PNG ou WebP.'; else {$dir=__DIR__.'/../assets/uploads/profiles';if(!is_dir($dir))mkdir($dir,0755,true);$arquivo=bin2hex(random_bytes(16)).'.'.$ext[$mime];if(move_uploaded_file($_FILES['foto_perfil']['tmp_name'],$dir.'/'.$arquivo))$foto='/assets/uploads/profiles/'.$arquivo;else $erro='Não foi possível salvar a foto.';}
-    }
-    
-    $sql = 'UPDATE usuarios SET nome = ?, email = ?, telefone = ?, foto_perfil = ? WHERE id = ?';
-    $stmt = $mysqli->prepare($sql);
-    $stmt->bind_param('ssssi', $nome, $email, $telefone, $foto, $_SESSION['usuario_id']);
-    
-    if (!$erro && $stmt->execute()) {
-        mensagem_sucesso('Perfil atualizado com sucesso!');
-        $usuario = pegar_usuario($_SESSION['usuario_id']);
-    } elseif (!$erro) {
-        $erro = 'Erro ao atualizar perfil.';
-    }
+$titulo_pagina='Meu Perfil';$estilos_pagina=['/assets/css/profile-card.css?v=1'];
+require_once __DIR__.'/../includes/auth.php';require_once __DIR__.'/../includes/functions.php';verificarAutenticacao();
+$usuario=pegar_usuario($_SESSION['usuario_id']);$erro=null;
+if($_SERVER['REQUEST_METHOD']==='POST'){
+ $nome=normalizar_nome($_POST['nome']??'');$email=normalizar_email($_POST['email']??'');$telefone=normalizar_telefone_br($_POST['telefone']??'');$foto=$usuario['foto_perfil']??'';
+ if(!validar_csrf($_POST['csrf_token']??''))$erro='A sessão expirou. Atualize a página.';elseif(mb_strlen($nome)<3)$erro='Informe seu nome completo.';elseif(!validar_email($email)||!in_array(strlen($telefone),[10,11],true))$erro='Confira o e-mail e o telefone.';
+ if(!$erro&&!empty($_FILES['foto_perfil']['name'])){$mime=(new finfo(FILEINFO_MIME_TYPE))->file($_FILES['foto_perfil']['tmp_name']);$ext=['image/jpeg'=>'jpg','image/png'=>'png','image/webp'=>'webp'];if(!isset($ext[$mime]))$erro='Envie uma foto JPG, PNG ou WebP.';else{$dir=__DIR__.'/../assets/uploads/profiles';if(!is_dir($dir))mkdir($dir,0755,true);$arquivo=bin2hex(random_bytes(16)).'.'.$ext[$mime];if(move_uploaded_file($_FILES['foto_perfil']['tmp_name'],$dir.'/'.$arquivo))$foto='/assets/uploads/profiles/'.$arquivo;else $erro='Não foi possível salvar a foto.';}}
+ if(!$erro){$stmt=$mysqli->prepare('SELECT id FROM usuarios WHERE email=? AND id<>? LIMIT 1');$stmt->bind_param('si',$email,$_SESSION['usuario_id']);$stmt->execute();if($stmt->get_result()->fetch_assoc())$erro='Este e-mail já está vinculado a outra conta.';}
+ if(!$erro){$stmt=$mysqli->prepare('UPDATE usuarios SET nome=?,email=?,telefone=?,foto_perfil=? WHERE id=?');$stmt->bind_param('ssssi',$nome,$email,$telefone,$foto,$_SESSION['usuario_id']);if($stmt->execute()){mensagem_sucesso('Perfil atualizado com sucesso.');redirecionar('/dashboard/perfil.php');}$erro='Não foi possível atualizar o perfil.';}
 }
+$usuario=pegar_usuario($_SESSION['usuario_id']);$tipo_rotulos=['cliente'=>'Cliente','profissional'=>'Profissional','empresa'=>'Empresa','admin'=>'Administrador'];$tipo_rotulo=$tipo_rotulos[$usuario['tipo']]??'Usuário';$complemento='Conta VoltX';
+if($usuario['tipo']==='profissional'){$p=pegar_perfil_profissional_por_usuario($usuario['id']);if($p)$complemento=$p['titulo_profissional'];}
+elseif($usuario['tipo']==='empresa'){$stmt=$mysqli->prepare('SELECT nome_fantasia FROM empresas WHERE usuario_id=?');$stmt->bind_param('i',$usuario['id']);$stmt->execute();$complemento=$stmt->get_result()->fetch_assoc()['nome_fantasia']??'Conta empresarial';}
+require_once __DIR__.'/../includes/header.php';
 ?>
-
-<div class="container">
-    <div class="form-container">
-        <h1>Meu Perfil</h1>
-        
-        <?php if (isset($erro)): ?>
-            <div class="alerta alerta-erro"><?php echo $erro; ?></div>
-        <?php endif; ?>
-        
-        <?php exibir_mensagens(); ?>
-        
-        <form method="POST" action="/dashboard/perfil.php" enctype="multipart/form-data"><input type="hidden" name="csrf_token" value="<?php echo token_csrf(); ?>">
-            <div class="form-group">
-                <label for="nome">Nome Completo:</label>
-                <input type="text" id="nome" name="nome" value="<?php echo sanitizar($usuario['nome']); ?>" required>
-            </div>
-            <div class="form-group"><label>CPF:</label><input value="<?php echo sanitizar($usuario['cpf'] ? mascarar_contato($usuario['cpf'],3) : 'Pendente — procure o suporte'); ?>" disabled><small>O CPF é protegido e não pode ser alterado.</small></div><div class="form-group"><label for="foto_perfil">Foto de perfil</label><?php if($usuario['foto_perfil']): ?><img src="<?php echo sanitizar($usuario['foto_perfil']); ?>" alt="Foto atual" style="width:90px;height:90px;object-fit:cover;border-radius:14px;display:block;margin-bottom:10px"><?php endif; ?><input id="foto_perfil" name="foto_perfil" type="file" accept="image/jpeg,image/png,image/webp"></div>
-            
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" value="<?php echo sanitizar($usuario['email']); ?>" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="telefone">Telefone:</label>
-                <input type="tel" id="telefone" name="telefone" value="<?php echo sanitizar($usuario['telefone']); ?>" required>
-            </div>
-            
-            <button type="submit" class="btn btn-primary">Atualizar Perfil</button>
-        </form>
-    </div>
-</div>
-
-<?php require_once __DIR__ . '/../includes/footer.php'; ?>
+<div class="container profile-account-page"><?php if($erro): ?><div class="alerta alerta-erro"><?php echo sanitizar($erro); ?></div><?php endif; ?><?php exibir_mensagens(); ?>
+<section class="identity-card" aria-label="Crachá do perfil"><div class="badge-stripe"></div><div class="badge-top"><span>IDENTIFICAÇÃO VOLTX</span><span class="account-chip"><?php echo sanitizar($tipo_rotulo); ?></span></div><div class="badge-content"><div class="badge-photo"><?php if($usuario['foto_perfil']): ?><img src="<?php echo sanitizar($usuario['foto_perfil']); ?>" alt="Foto de <?php echo sanitizar($usuario['nome']); ?>"><?php else: ?><span><?php echo sanitizar(mb_strtoupper(mb_substr($usuario['nome'],0,1))); ?></span><?php endif; ?></div><div class="badge-identity"><small>MEMBRO VOLTX</small><h1><?php echo sanitizar($usuario['nome']); ?></h1><p><?php echo sanitizar($complemento); ?></p><div class="badge-data"><div><span>E-mail</span><strong><?php echo sanitizar($usuario['email']); ?></strong></div><div><span>Telefone</span><strong><?php echo sanitizar(formatar_telefone_formulario($usuario['telefone'])); ?></strong></div><div><span>CPF protegido</span><strong><?php echo sanitizar($usuario['cpf']?mascarar_contato($usuario['cpf'],3):'Pendente'); ?></strong></div></div></div></div><div class="badge-footer"><span><i></i> Perfil ativo</span><button class="btn-small" type="button" data-profile-edit>Editar dados</button></div></section>
+<form id="profile-edit-form" method="POST" action="/dashboard/perfil.php" enctype="multipart/form-data" class="profile-edit-form" hidden><input type="hidden" name="csrf_token" value="<?php echo token_csrf(); ?>"><div class="edit-heading"><div><span>EDIÇÃO DO PERFIL</span><h2>Dados editáveis</h2></div><button type="button" class="close-edit" data-profile-close>×</button></div><div class="form-grid"><div class="form-group"><label for="nome">Nome completo</label><input id="nome" name="nome" value="<?php echo sanitizar($usuario['nome']); ?>" required></div><div class="form-group"><label for="email">E-mail</label><input id="email" name="email" type="email" value="<?php echo sanitizar($usuario['email']); ?>" required></div><div class="form-group"><label for="telefone">Telefone</label><input id="telefone" name="telefone" type="tel" value="<?php echo sanitizar(formatar_telefone_formulario($usuario['telefone'])); ?>" required></div><div class="form-group"><label>CPF</label><input value="<?php echo sanitizar($usuario['cpf']?mascarar_contato($usuario['cpf'],3):'Pendente'); ?>" disabled><small>O CPF é protegido e não pode ser alterado.</small></div><div class="form-group form-span"><label for="foto_perfil">Trocar foto do perfil</label><input id="foto_perfil" name="foto_perfil" type="file" accept="image/jpeg,image/png,image/webp"></div></div><button class="btn" type="submit">Salvar alterações</button></form></div>
+<script>const form=document.getElementById('profile-edit-form'),open=document.querySelector('[data-profile-edit]');function toggleEdit(show){form.hidden=!show;open.textContent=show?'Fechar edição':'Editar dados';if(show)form.scrollIntoView({behavior:'smooth',block:'center'});}open.addEventListener('click',()=>toggleEdit(form.hidden));document.querySelector('[data-profile-close]').addEventListener('click',()=>toggleEdit(false));<?php if($erro): ?>toggleEdit(true);<?php endif; ?></script>
+<?php require_once __DIR__.'/../includes/footer.php'; ?>

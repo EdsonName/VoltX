@@ -21,5 +21,19 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     ['nome','descricao','preco','selo','imagem_url','beneficios'].forEach(id => campo(id)?.addEventListener('input', atualizar));
+    campo('imagem_arquivo')?.addEventListener('change', event => {
+        const arquivo = event.target.files?.[0];
+        if (!arquivo) return atualizar();
+        const leitor = new FileReader();
+        leitor.addEventListener('load', () => {
+            const img = preview.querySelector('.preview-image img');
+            img.src = leitor.result;
+            img.alt = `Prévia de ${campo('nome').value || 'serviço'}`;
+            preview.querySelector('.file-name')?.remove();
+        });
+        leitor.readAsDataURL(arquivo);
+        const texto = document.querySelector('.file-upload strong');
+        if (texto) texto.textContent = arquivo.name;
+    });
     atualizar();
 });

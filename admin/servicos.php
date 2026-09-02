@@ -1,5 +1,6 @@
 <?php
 $titulo_pagina = 'Gerenciar Serviços';
+$estilos_pagina = ['/assets/css/servicos.css?v=3'];
 $scripts_pagina = ['/assets/js/admin-servicos.js'];
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/functions.php';
@@ -29,8 +30,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (mb_strlen($descricao) < 10) $erros[] = 'Informe uma descrição com pelo menos 10 caracteres.';
             if ($preco === false || $preco < 0) $erros[] = 'Informe um preço válido.';
             if ($duracao === false || $duracao < 1) $erros[] = 'Informe uma duração válida.';
-            if ($imagem_url !== '' && !filter_var($imagem_url, FILTER_VALIDATE_URL)) $erros[] = 'Informe uma URL de imagem válida.';
+            $imagem_local_valida = str_starts_with($imagem_url, '/assets/uploads/services/');
+            if ($imagem_url !== '' && !$imagem_local_valida && !filter_var($imagem_url, FILTER_VALIDATE_URL)) $erros[] = 'Informe uma URL de imagem válida.';
             if (mb_strlen($selo) > 80) $erros[] = 'O selo deve ter no máximo 80 caracteres.';
+
+            if (isset($_FILES['imagem_arquivo']) && $_FILES['imagem_arquivo']['error'] !== UPLOAD_ERR_NO_FILE) {
+                $arquivo = $_FILES['imagem_arquivo'];
+                if ($arquivo['error'] !== UPLOAD_ERR_OK) {
+                    $erros[] = 'Não foi possível enviar a imagem. Tente novamente.';
+                } elseif ($arquivo['size'] > 5 * 1024 * 1024) {
+                    $erros[] = 'A imagem deve ter no máximo 5 MB.';
+                } else {
+                    $mime = (new finfo(FILEINFO_MIME_TYPE))->file($arquivo['tmp_name']);
+                    $extensoes = ['image/jpeg'=>'jpg', 'image/png'=>'png', 'image/webp'=>'webp'];
+                    if (!isset($extensoes[$mime])) {
+                        $erros[] = 'Formato inválido. Envie uma imagem JPG, PNG ou WebP.';
+                    } else {
+                        $diretorio_upload = __DIR__ . '/../assets/uploads/services';
+                        if (!is_dir($diretorio_upload) && !mkdir($diretorio_upload, 0755, true)) {
+                            $erros[] = 'Não foi possível preparar a pasta de imagens.';
+                        } else {
+                            $nome_arquivo = bin2hex(random_bytes(16)) . '.' . $extensoes[$mime];
+                            if (move_uploaded_file($arquivo['tmp_name'], $diretorio_upload . '/' . $nome_arquivo)) {
+                                $imagem_url = '/assets/uploads/services/' . $nome_arquivo;
+                            } else {
+                                $erros[] = 'Não foi possível salvar a imagem enviada.';
+                            }
+                        }
+                    }
+                }
+            }
 
             if (!$erros) {
                 global $mysqli;
@@ -71,6 +100,11 @@ if (!$servico_edicao && isset($_GET['editar'])) {
 
 $mostrar_formulario = isset($_GET['novo']) || $servico_edicao;
 $servicos = pegar_todos_servicos();
+$imagens_padrao = [
+    'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=700&q=82',
+    'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=700&q=82',
+    'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=700&q=82',
+];
 require_once __DIR__ . '/../includes/header.php';
 ?>
 <div class="container">
@@ -82,12 +116,14 @@ require_once __DIR__ . '/../includes/header.php';
     <?php if ($erros): ?><div class="alerta alerta-erro"><ul><?php foreach ($erros as $erro): ?><li><?php echo sanitizar($erro); ?></li><?php endforeach; ?></ul></div><?php endif; ?>
 
     <?php if ($mostrar_formulario): ?>
-    <div class="service-editor"><form method="POST" class="service-form">
+    <div class="service-editor"><form method="POST" enctype="multipart/form-data" class="service-form">
         <input type="hidden" name="csrf_token" value="<?php echo token_csrf(); ?>"><input type="hidden" name="acao" value="salvar"><input type="hidden" name="id" value="<?php echo (int)($servico_edicao['id'] ?? 0); ?>">
         <div class="form-grid">
             <div class="form-group form-span"><label for="nome">Nome do serviço</label><input id="nome" name="nome" maxlength="255" value="<?php echo sanitizar($servico_edicao['nome'] ?? ''); ?>" required></div>
             <div class="form-group form-span"><label for="descricao">Descrição</label><textarea id="descricao" name="descricao" rows="4" required><?php echo sanitizar($servico_edicao['descricao'] ?? ''); ?></textarea></div>
             <div class="form-group form-span"><label for="imagem_url">URL da imagem</label><input id="imagem_url" name="imagem_url" type="url" placeholder="https://exemplo.com/imagem.jpg" value="<?php echo sanitizar($servico_edicao['imagem_url'] ?? ''); ?>"><small>Use uma imagem horizontal, preferencialmente 700 × 400 px.</small></div>
+            <div class="upload-divider form-span"><span>ou</span></div>
+            <div class="form-group form-span"><label for="imagem_arquivo">Enviar foto do computador</label><label class="file-upload" for="imagem_arquivo"><span class="file-upload-icon">↥</span><span><strong>Escolher uma imagem</strong><small>JPG, PNG ou WebP — máximo de 5 MB</small></span></label><input class="file-input" id="imagem_arquivo" name="imagem_arquivo" type="file" accept="image/jpeg,image/png,image/webp"></div>
             <div class="form-group"><label for="preco">Preço (R$)</label><input id="preco" name="preco" type="number" min="0" step="0.01" value="<?php echo sanitizar($servico_edicao['preco'] ?? ''); ?>" required></div>
             <div class="form-group"><label for="duracao">Duração (minutos)</label><input id="duracao" name="duracao_minutos" type="number" min="1" value="<?php echo sanitizar($servico_edicao['duracao_minutos'] ?? ''); ?>" required></div>
             <div class="form-group form-span"><label for="selo">Selo do card</label><input id="selo" name="selo" maxlength="80" placeholder="Ex.: Mais pedido, Segurança, Atendimento 24h" value="<?php echo sanitizar($servico_edicao['selo'] ?? ''); ?>"></div>
@@ -100,12 +136,19 @@ require_once __DIR__ . '/../includes/header.php';
     <?php endif; ?>
 
     <?php if ($servicos): ?>
-    <table class="tabela"><thead><tr><th>Nome</th><th>Preço</th><th>Duração</th><th>Status</th><th>Ações</th></tr></thead><tbody>
-    <?php foreach ($servicos as $servico): ?><tr>
-        <td><strong><?php echo sanitizar($servico['nome']); ?></strong></td><td>R$ <?php echo number_format($servico['preco'],2,',','.'); ?></td><td><?php echo (int)$servico['duracao_minutos']; ?> min</td>
-        <td><span class="status <?php echo $servico['ativo'] ? 'status-confirmado' : 'status-cancelado'; ?>"><?php echo $servico['ativo'] ? 'Publicado' : 'Oculto'; ?></span></td>
-        <td class="table-actions"><a href="?editar=<?php echo $servico['id']; ?>" class="btn-small">Editar</a><form method="POST"><input type="hidden" name="csrf_token" value="<?php echo token_csrf(); ?>"><input type="hidden" name="acao" value="alternar"><input type="hidden" name="id" value="<?php echo $servico['id']; ?>"><button class="btn-small btn-secondary" type="submit"><?php echo $servico['ativo'] ? 'Ocultar' : 'Publicar'; ?></button></form></td>
-    </tr><?php endforeach; ?></tbody></table>
+    <div class="admin-services-grid">
+    <?php foreach ($servicos as $indice => $servico):
+        $imagem_card = $servico['imagem_url'] ?: $imagens_padrao[$indice % count($imagens_padrao)];
+        $beneficios_card = array_values(array_filter(array_map('trim', preg_split('/\R/', $servico['beneficios'] ?? ''))));
+    ?>
+        <article class="catalog-card admin-service-card <?php echo !empty($servico['destaque_emergencia']) ? 'is-emergency' : ''; ?>">
+            <a class="card-edit-link" href="?editar=<?php echo (int)$servico['id']; ?>" aria-label="Editar <?php echo sanitizar($servico['nome']); ?>"></a>
+            <div class="catalog-image"><img src="<?php echo sanitizar($imagem_card); ?>" alt="<?php echo sanitizar($servico['nome']); ?>" loading="lazy"><span class="catalog-badge"><?php echo sanitizar($servico['selo'] ?: 'Profissional'); ?></span><span class="admin-card-status <?php echo $servico['ativo'] ? 'is-active' : ''; ?>"><?php echo $servico['ativo'] ? 'Publicado' : 'Oculto'; ?></span></div>
+            <div class="catalog-body"><div><h2><span class="service-icon">⚡</span><?php echo sanitizar($servico['nome']); ?></h2><div class="catalog-price">A partir de R$ <?php echo number_format($servico['preco'],2,',','.'); ?></div><p><?php echo sanitizar($servico['descricao']); ?></p><ul class="service-facts"><?php if ($beneficios_card): foreach (array_slice($beneficios_card,0,2) as $beneficio): ?><li><span>✓</span><?php echo sanitizar($beneficio); ?></li><?php endforeach; else: ?><li><span>✓</span><?php echo (int)$servico['duracao_minutos']; ?> minutos</li><?php endif; ?></ul></div>
+                <div class="admin-card-actions"><span class="edit-hint">✎ Clique para editar</span><form method="POST"><input type="hidden" name="csrf_token" value="<?php echo token_csrf(); ?>"><input type="hidden" name="acao" value="alternar"><input type="hidden" name="id" value="<?php echo (int)$servico['id']; ?>"><button class="visibility-button" type="submit"><?php echo $servico['ativo'] ? 'Ocultar' : 'Publicar'; ?></button></form></div>
+            </div>
+        </article>
+    <?php endforeach; ?></div>
     <?php else: ?><div class="empty-state"><strong>Nenhum serviço cadastrado.</strong><p>Crie o primeiro serviço para exibi-lo no site.</p></div><?php endif; ?>
 </div>
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

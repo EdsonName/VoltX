@@ -17,6 +17,10 @@ build/
 *.sqlite
 *.sqlite3
 uploads/
+!assets/uploads/
+!assets/uploads/services/
+assets/uploads/services/*
+!assets/uploads/services/.gitkeep
 
 # IDE and operating system
 .idea/

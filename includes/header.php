@@ -3,6 +3,7 @@
 // Cabeçalho do site
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/functions.php';
+if (usuario_autenticado()) verificarAutenticacao();
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">

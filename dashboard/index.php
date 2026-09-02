@@ -19,7 +19,7 @@ $usuario = pegar_usuario($_SESSION['usuario_id']);
         <?php if (usuario_eh_profissional()): ?>
         <a href="/dashboard/profissional.php" class="card"><h3>Meu Perfil Profissional</h3><p>Editar apresentação e área de atendimento</p></a>
         <a href="/dashboard/ofertas.php" class="card"><h3>Meus Serviços</h3><p>Cadastrar e gerenciar suas ofertas</p></a>
-        <a href="/dashboard/feed.php" class="card"><h3>Minhas Publicações</h3><p>Criar conteúdo para o feed público</p></a>
+        <a href="/dashboard/conteudo.php" class="card"><h3>Meu Feed e Anúncios</h3><p>Publicações, comentários, perfil público e campanhas</p></a>
         <?php endif; ?>
         <a href="/dashboard/agendamentos.php" class="card">
             <h3>Meus Agendamentos</h3>

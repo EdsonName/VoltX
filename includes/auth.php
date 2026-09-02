@@ -19,6 +19,19 @@ function verificarAutenticacao() {
         header('Location: /login.php');
         exit;
     }
+    $rota = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+    if (($_SESSION['tipo_usuario'] ?? '') !== 'admin' && !in_array($rota, ['/completar-cpf.php','/logout.php'], true)) {
+        require_once __DIR__ . '/../config/database.php';
+        global $mysqli;
+        $stmt = $mysqli->prepare('SELECT cpf FROM usuarios WHERE id=?');
+        $stmt->bind_param('i', $_SESSION['usuario_id']);
+        $stmt->execute();
+        if (empty($stmt->get_result()->fetch_assoc()['cpf'])) {
+            $_SESSION['cpf_retorno'] = $rota;
+            header('Location: /completar-cpf.php');
+            exit;
+        }
+    }
 }
 
 function verificarAdmin() {

@@ -30,6 +30,9 @@ assets/uploads/profiles/*
 !assets/uploads/posts/
 assets/uploads/posts/*
 !assets/uploads/posts/.gitkeep
+!assets/uploads/ads/
+assets/uploads/ads/*
+!assets/uploads/ads/.gitkeep
 
 # IDE and operating system
 .idea/

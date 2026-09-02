@@ -21,6 +21,9 @@ uploads/
 !assets/uploads/services/
 assets/uploads/services/*
 !assets/uploads/services/.gitkeep
+!assets/uploads/about/
+assets/uploads/about/*
+!assets/uploads/about/.gitkeep
 
 # IDE and operating system
 .idea/

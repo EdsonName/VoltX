@@ -13,5 +13,7 @@ INSERT INTO configuracoes_site (chave, valor) VALUES
 ('responsavel', 'Edson'),
 ('experiencia_anos', '10'),
 ('texto_sobre', 'A VoltX é uma empresa especializada em soluções de eletricidade, segurança e atendimento profissional.'),
-('missao', 'Oferecer serviços elétricos de qualidade, com segurança e profissionalismo.')
+('missao', 'Oferecer serviços elétricos de qualidade, com segurança e profissionalismo.'),
+('porque_escolher', '- Equipe de profissionais qualificados\n- Atendimento rápido e eficiente\n- Orçamentos sem compromisso\n- Garantia em todos os serviços'),
+('fotos_sobre', '[]')
 ON DUPLICATE KEY UPDATE chave = VALUES(chave);

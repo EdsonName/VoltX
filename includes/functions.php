@@ -90,6 +90,38 @@ function config_site($chave, $padrao = '') {
     return $configuracoes[$chave] ?? $padrao;
 }
 
+function markdown_inline_seguro($texto) {
+    $texto = htmlspecialchars($texto, ENT_QUOTES, 'UTF-8');
+    $texto = preg_replace('/`([^`]+)`/', '<code>$1</code>', $texto);
+    $texto = preg_replace('/\*\*([^*]+)\*\*/', '<strong>$1</strong>', $texto);
+    $texto = preg_replace('/(?<!\*)\*([^*]+)\*(?!\*)/', '<em>$1</em>', $texto);
+    return $texto;
+}
+
+function renderizar_markdown($markdown) {
+    $linhas = preg_split('/\R/', (string)$markdown);
+    $html = '';
+    $lista_aberta = false;
+    foreach ($linhas as $linha) {
+        $linha = trim($linha);
+        if (preg_match('/^[-*]\s+(.+)$/', $linha, $item)) {
+            if (!$lista_aberta) { $html .= '<ul>'; $lista_aberta = true; }
+            $html .= '<li>' . markdown_inline_seguro($item[1]) . '</li>';
+            continue;
+        }
+        if ($lista_aberta) { $html .= '</ul>'; $lista_aberta = false; }
+        if ($linha === '') continue;
+        if (preg_match('/^(#{1,3})\s+(.+)$/', $linha, $titulo)) {
+            $nivel = strlen($titulo[1]) + 1;
+            $html .= "<h{$nivel}>" . markdown_inline_seguro($titulo[2]) . "</h{$nivel}>";
+        } else {
+            $html .= '<p>' . markdown_inline_seguro($linha) . '</p>';
+        }
+    }
+    if ($lista_aberta) $html .= '</ul>';
+    return $html;
+}
+
 function pegar_servico($id) {
     global $mysqli;
     $sql = 'SELECT * FROM servicos WHERE id = ? AND ativo = 1 AND pausado = 0';

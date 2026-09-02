@@ -4,8 +4,11 @@ $estilos_pagina = ['/assets/css/servicos.css?v=8'];
 $scripts_pagina = ['/assets/js/servicos.js?v=5'];
 require_once __DIR__ . '/includes/functions.php';
 $servicos = pegar_servicos();
+$publico_filtro = $_GET['publico'] ?? 'geral';
+if (!in_array($publico_filtro, ['geral','residencial','comercial','industrial'], true)) $publico_filtro = 'geral';
+$condicao_publico = $publico_filtro === 'geral' ? '' : " AND o.publico='" . $mysqli->real_escape_string($publico_filtro) . "'";
 $ofertas_profissionais = [];
-$resultado_ofertas = $mysqli->query("SELECT o.*,COALESCE(NULLIF(o.imagem_url,''),'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=700&q=82') AS imagem_url,p.id AS perfil_id,p.marca,p.mei,u.nome AS profissional_nome FROM ofertas_profissionais o JOIN profissionais p ON p.id=o.profissional_id AND p.ativo=1 JOIN usuarios u ON u.id=p.usuario_id WHERE o.ativo=1 ORDER BY RAND() LIMIT 12");
+$resultado_ofertas = $mysqli->query("SELECT o.*,COALESCE(NULLIF(o.imagem_url,''),'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=700&q=82') AS imagem_url,p.id AS perfil_id,p.marca,p.mei,u.nome AS profissional_nome FROM ofertas_profissionais o JOIN profissionais p ON p.id=o.profissional_id AND p.ativo=1 JOIN usuarios u ON u.id=p.usuario_id WHERE o.ativo=1{$condicao_publico} ORDER BY RAND() LIMIT 12");
 if ($resultado_ofertas) $ofertas_profissionais = $resultado_ofertas->fetch_all(MYSQLI_ASSOC);
 $servicos_disponiveis = array_values(array_filter($servicos, fn($servico) => empty($servico['pausado'])));
 $whatsapp = preg_replace('/\D/', '', config_site('whatsapp', '5561981044986'));
@@ -23,6 +26,7 @@ require_once __DIR__ . '/includes/header.php';
 ?>
 <section class="services-page"><div class="container">
     <header class="services-heading"><span class="eyebrow">Soluções VoltX</span><h1>Nossos Serviços</h1><p>Atendimento em <?php echo sanitizar(config_site('regiao_atendimento', 'Brasília e Entorno')); ?>.</p></header>
+    <form class="service-audience-filter" method="GET"><label for="publico">Tipo de serviço<select id="publico" name="publico"><option value="geral">Geral — mostrar todos</option><option value="residencial" <?php echo $publico_filtro==='residencial'?'selected':''; ?>>Residencial</option><option value="comercial" <?php echo $publico_filtro==='comercial'?'selected':''; ?>>Comercial</option><option value="industrial" <?php echo $publico_filtro==='industrial'?'selected':''; ?>>Industrial</option></select></label><button class="btn-small" type="submit">Filtrar</button></form>
     <?php if ($ofertas_profissionais): ?><section class="professional-offers"><div class="marketplace-section-title"><span class="eyebrow">Recomendados para você</span><h2>Serviços da comunidade VoltX</h2><p>A ordem é renovada a cada visita para dar espaço a diferentes profissionais.</p></div><div class="services-catalog">
     <?php foreach($ofertas_profissionais as $oferta): $identidade=$oferta['marca']?:$oferta['profissional_nome']; ?>
         <article class="catalog-card professional-offer-card"><div class="catalog-image"><img src="<?php echo sanitizar($oferta['imagem_url']); ?>" alt="<?php echo sanitizar($oferta['nome']); ?>" loading="lazy"><span class="catalog-badge"><?php echo sanitizar($oferta['categoria']); ?></span></div><div class="catalog-body"><div><div class="provider-line"><span><?php echo sanitizar($identidade); ?><?php echo $oferta['mei']?' (MEI)':''; ?></span><strong>★ <?php echo number_format((float)$oferta['nota_media'],1,',','.'); ?>/10</strong></div><h2><?php echo sanitizar($oferta['nome']); ?></h2><p><?php echo sanitizar($oferta['descricao']); ?></p></div><div class="catalog-actions"><div class="catalog-price">R$ <?php echo number_format((float)$oferta['preco_inicial'],2,',','.'); ?> <small><?php echo sanitizar($oferta['unidade_preco']); ?></small></div><a class="details-link" href="/profissional.php?id=<?php echo (int)$oferta['perfil_id']; ?>">Ver profissional →</a></div></div></article>

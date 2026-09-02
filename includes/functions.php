@@ -34,6 +34,11 @@ function normalizar_nome($nome) {
     }, explode(' ', $nome)));
 }
 
+function normalizar_rotulo($texto) {
+    $texto = mb_strtolower(preg_replace('/\s+/u', ' ', trim((string)$texto)), 'UTF-8');
+    return $texto === '' ? '' : mb_strtoupper(mb_substr($texto,0,1,'UTF-8'),'UTF-8') . mb_substr($texto,1,null,'UTF-8');
+}
+
 function normalizar_telefone_br($telefone) {
     $digitos = preg_replace('/\D/', '', (string)$telefone);
     if (str_starts_with($digitos, '55') && strlen($digitos) >= 12) $digitos = substr($digitos, 2);

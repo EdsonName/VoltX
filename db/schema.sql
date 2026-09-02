@@ -107,6 +107,8 @@ CREATE TABLE ofertas_profissionais (
     nome VARCHAR(180) NOT NULL,
     categoria VARCHAR(100) NOT NULL,
     categoria_id INT,
+    subcategoria VARCHAR(120),
+    publico ENUM('residencial','comercial','industrial','geral') NOT NULL DEFAULT 'geral',
     descricao TEXT NOT NULL,
     imagem_url VARCHAR(1000),
     preco_inicial DECIMAL(10,2),

@@ -5,9 +5,10 @@ $titulo_pagina = 'Login';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/includes/functions.php';
+$redirect = url_interna_segura($_POST['redirect'] ?? $_GET['redirect'] ?? '', '');
 
 if (usuario_autenticado()) {
-    redirecionar(usuario_eh_admin() ? '/admin/' : '/dashboard/');
+    redirecionar(usuario_eh_admin() ? '/admin/' : ($redirect ?: '/dashboard/'));
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -34,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($usuario['tipo'] === 'admin') {
                 redirecionar('/admin/');
             } else {
-                redirecionar('/dashboard/');
+                redirecionar($redirect ?: '/dashboard/');
             }
         } else {
             $erro = 'Email ou senha incorretos';
@@ -56,6 +57,7 @@ require_once __DIR__ . '/includes/header.php';
         <?php endif; ?>
         
         <form method="POST" action="/login.php">
+            <input type="hidden" name="redirect" value="<?php echo sanitizar($redirect); ?>">
             <div class="form-group">
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" autocomplete="email" required>

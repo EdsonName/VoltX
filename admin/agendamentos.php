@@ -9,7 +9,7 @@ require_once __DIR__ . '/../config/database.php';
 
 verificarAdmin();
 
-$sql = 'SELECT a.*, u.nome as cliente_nome, s.nome as servico_nome 
+$sql = 'SELECT a.*, u.nome as cliente_nome, u.telefone as cliente_telefone, u.email as cliente_email, s.nome as servico_nome
         FROM agendamentos a 
         JOIN usuarios u ON a.usuario_id = u.id 
         JOIN servicos s ON a.servico_id = s.id 
@@ -32,18 +32,23 @@ $agendamentos = $resultado->fetch_all(MYSQLI_ASSOC);
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($agendamentos as $agendamento): ?>
+                <?php foreach ($agendamentos as $agendamento):
+                    $numero = preg_replace('/\D/', '', $agendamento['cliente_telefone'] ?? '');
+                    if ($numero && !str_starts_with($numero, '55')) $numero = '55' . $numero;
+                    $mensagem_whatsapp = "Olá, {$agendamento['cliente_nome']}! Aqui é da VoltX. Estamos entrando em contato sobre seu agendamento de {$agendamento['servico_nome']} para " . date('d/m/Y \à\s H:i', strtotime($agendamento['data_horario'])) . ".\n\nEndereço: {$agendamento['endereco']} — {$agendamento['bairro_cidade']}.";
+                ?>
                 <tr>
                     <td><?php echo sanitizar($agendamento['cliente_nome']); ?></td>
                     <td><?php echo sanitizar($agendamento['servico_nome']); ?></td>
                     <td><?php echo date('d/m/Y H:i', strtotime($agendamento['data_horario'])); ?></td>
                     <td><?php echo sanitizar($agendamento['status']); ?></td>
-                    <td>
-                        <a href="#" class="btn-small">Editar</a>
+                        <td>
+                            <?php if (!empty($agendamento['telefone_whatsapp']) && $numero): ?><a href="https://wa.me/<?php echo $numero; ?>?text=<?php echo rawurlencode($mensagem_whatsapp); ?>" class="btn-small whatsapp-admin" target="_blank" rel="noopener noreferrer">WhatsApp</a><?php endif; ?>
+                            <a href="#" class="btn-small">Editar</a>
                         <a href="#" class="btn-small btn-danger">Deletar</a>
                     </td>
                 </tr>
-            <?php endforeach; ?>
+                <?php endforeach; ?>
         </tbody>
     </table>
 </div>

@@ -18,7 +18,7 @@ require_once __DIR__ . '/../includes/auth.php';
         <link rel="stylesheet" href="<?php echo htmlspecialchars($estilo, ENT_QUOTES, 'UTF-8'); ?>">
     <?php endforeach; ?>
     <?php if (usuario_eh_admin()): ?>
-        <link rel="stylesheet" href="/assets/css/admin.css?v=4">
+        <link rel="stylesheet" href="/assets/css/admin.css?v=5">
     <?php elseif (usuario_autenticado()): ?>
         <link rel="stylesheet" href="/assets/css/dashboard.css">
     <?php endif; ?>

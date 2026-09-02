@@ -1,0 +1,7 @@
+.whatsapp-confirm{display:flex;align-items:flex-start;gap:10px;padding:12px;border:1px solid rgba(37,211,102,.28);border-radius:9px;background:rgba(37,211,102,.06);cursor:pointer}
+.whatsapp-confirm input{width:18px;height:18px;margin-top:2px;accent-color:#25d366}
+.whatsapp-confirm strong,.whatsapp-confirm small{display:block}
+.whatsapp-confirm strong{color:#e7e8e5;font-size:.82rem}
+.whatsapp-confirm small{color:var(--muted);font-size:.7rem;margin-top:2px}
+.profile-help{display:inline-block;margin-top:8px;color:var(--muted);font-size:.7rem;text-decoration:none}
+.profile-help:hover{color:var(--yellow)}

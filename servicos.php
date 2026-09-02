@@ -1,6 +1,6 @@
 <?php
 $titulo_pagina = 'Serviços';
-$estilos_pagina = ['/assets/css/servicos.css?v=7'];
+$estilos_pagina = ['/assets/css/servicos.css?v=8'];
 $scripts_pagina = ['/assets/js/servicos.js?v=4'];
 require_once __DIR__ . '/includes/functions.php';
 $servicos = pegar_servicos();
@@ -37,7 +37,7 @@ require_once __DIR__ . '/includes/header.php';
                 <article class="catalog-card service-card-back" aria-hidden="true">
                     <div class="card-back-header"><button class="flip-back" type="button" aria-label="Voltar para a frente do card">← Voltar</button><span>Detalhes</span></div>
                     <div class="card-back-content"><span class="eyebrow">Serviço VoltX</span><h2><?php echo sanitizar($servico['nome']); ?></h2><p><?php echo nl2br(sanitizar($servico['descricao'])); ?></p><div class="detail-metrics"><div><small>Valor médio</small><strong>R$ <?php echo number_format($servico['preco'],2,',','.'); ?></strong></div><div><small>Duração estimada</small><strong><?php echo (int)$servico['duracao_minutos']; ?> min</strong></div></div><h3>O que está incluído</h3><ul class="service-facts"><?php if ($beneficios): foreach ($beneficios as $beneficio): ?><li><span>✓</span><?php echo sanitizar($beneficio); ?></li><?php endforeach; else: ?><li><span>✓</span>Atendimento profissional</li><li><span>✓</span>Serviço com garantia</li><?php endif; ?></ul></div>
-                    <div class="card-back-actions"><a class="whatsapp-button" href="https://wa.me/<?php echo $whatsapp; ?>?text=<?php echo rawurlencode($mensagem); ?>" target="_blank" rel="noopener noreferrer">◉ Pedir orçamento</a><?php if (usuario_autenticado()): ?><a class="schedule-link" href="/agendar.php?servico_id=<?php echo (int)$servico['id']; ?>">Agendar serviço</a><?php endif; ?></div>
+                    <div class="card-back-actions"><a class="whatsapp-button" href="https://wa.me/<?php echo $whatsapp; ?>?text=<?php echo rawurlencode($mensagem); ?>" target="_blank" rel="noopener noreferrer">◉ Pedir orçamento</a><?php if (usuario_autenticado()): ?><a class="schedule-link" href="/agendar.php?servico_id=<?php echo (int)$servico['id']; ?>">Agendar serviço</a><?php else: $destino_agendamento = '/agendar.php?servico_id=' . (int)$servico['id']; ?><a class="schedule-link" href="/cadastro.php?redirect=<?php echo rawurlencode($destino_agendamento); ?>">Criar conta para agendar</a><a class="login-schedule" href="/login.php?redirect=<?php echo rawurlencode($destino_agendamento); ?>">Já tenho conta</a><?php endif; ?></div>
                 </article>
             </div>
         </div>

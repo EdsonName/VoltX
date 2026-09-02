@@ -41,6 +41,7 @@ CREATE TABLE agendamentos (
     bairro_cidade VARCHAR(255),
     endereco VARCHAR(500),
     localizacao_gps VARCHAR(500),
+    telefone_whatsapp BOOLEAN DEFAULT FALSE,
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id),

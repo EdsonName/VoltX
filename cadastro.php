@@ -2,11 +2,12 @@
 // cadastro.php
 // Página de cadastro
 $titulo_pagina = 'Cadastro';
+require_once __DIR__ . '/includes/auth.php';
+require_once __DIR__ . '/config/database.php';
+require_once __DIR__ . '/includes/functions.php';
+$redirect = url_interna_segura($_POST['redirect'] ?? $_GET['redirect'] ?? '/dashboard/', '/dashboard/');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    require_once __DIR__ . '/config/database.php';
-    require_once __DIR__ . '/includes/functions.php';
-    
     $nome = sanitizar($_POST['nome']);
     $email = sanitizar($_POST['email']);
     $telefone = sanitizar($_POST['telefone']);
@@ -47,8 +48,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bind_param('sssss', $nome, $email, $telefone, $senha_hash, $tipo);
             
             if ($stmt->execute()) {
-                mensagem_sucesso('Cadastro realizado com sucesso! Faça login agora.');
-                redirecionar('/login.php');
+                session_regenerate_id(true);
+                $_SESSION['usuario_id'] = $stmt->insert_id;
+                $_SESSION['usuario_nome'] = $nome;
+                $_SESSION['tipo_usuario'] = 'cliente';
+                $_SESSION['login_em'] = time();
+                mensagem_sucesso('Conta criada com sucesso! Seus dados já foram preenchidos.');
+                redirecionar($redirect);
             } else {
                 $erros[] = 'Erro ao cadastrar. Tente novamente.';
             }
@@ -74,6 +80,7 @@ require_once __DIR__ . '/includes/header.php';
         <?php endif; ?>
         
         <form method="POST" action="/cadastro.php">
+            <input type="hidden" name="redirect" value="<?php echo sanitizar($redirect); ?>">
             <div class="form-group">
                 <label for="nome">Nome Completo:</label>
                 <input type="text" id="nome" name="nome" required>

@@ -68,6 +68,11 @@ function validar_csrf($token) {
     return isset($_SESSION['csrf_token']) && is_string($token) && hash_equals($_SESSION['csrf_token'], $token);
 }
 
+function url_interna_segura($url, $padrao = '/') {
+    if (!is_string($url) || $url === '' || $url[0] !== '/' || str_starts_with($url, '//')) return $padrao;
+    return $url;
+}
+
 function pegar_servico($id) {
     global $mysqli;
     $sql = 'SELECT * FROM servicos WHERE id = ? AND ativo = 1 AND pausado = 0';

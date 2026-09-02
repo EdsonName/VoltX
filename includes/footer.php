@@ -37,5 +37,8 @@
     <?php if (($caminho_atual ?? '') === '/profissional.php' && !empty($perfil['id'])): $destino_chat_perfil = '/chat.php?profissional_id=' . (int)$perfil['id']; ?>
         <script>const whatsapp=document.querySelector('.contact-professional');if(whatsapp){const chat=document.createElement('a');chat.className='contact-professional internal-chat';chat.textContent='✉ Conversar pelo chat da VoltX';chat.href=<?php echo json_encode(usuario_autenticado() ? $destino_chat_perfil : '/login.php?redirect=' . rawurlencode($destino_chat_perfil)); ?>;whatsapp.before(chat)}</script>
     <?php endif; ?>
+    <?php if (($caminho_atual ?? '') === '/profissional.php' && !empty($perfil['id']) && usuario_autenticado() && !usuario_eh_profissional() && !usuario_eh_admin()): ?>
+        <script>const profileAside=document.querySelector('.public-profile>aside');if(profileAside){const rating=document.createElement('form');rating.className='profile-rating';rating.method='POST';rating.action='/feed-acao.php';rating.innerHTML=<?php echo json_encode('<input type="hidden" name="csrf_token" value="'.token_csrf().'"><input type="hidden" name="acao" value="avaliar"><input type="hidden" name="profissional_id" value="'.(int)$perfil['id'].'"><label>Recomendar este profissional</label><select name="nota"><option value="5">★★★★★ Excelente</option><option value="4">★★★★ Muito bom</option><option value="3">★★★ Bom</option><option value="2">★★ Regular</option><option value="1">★ Ruim</option></select><button>Enviar avaliação</button>'); ?>;profileAside.append(rating)}</script>
+    <?php endif; ?>
 </body>
 </html>

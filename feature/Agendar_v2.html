@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendar Serviço | VoltX</title>
+    <!-- Font Awesome para Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #0a0a0c;
+            --card-bg: #141418;
+            --accent-yellow: #ffc107;
+            --accent-wsp: #25D366;
+            --text-main: #ffffff;
+            --text-muted: #a0a0ab;
+            --border-color: #26262e;
+            --radius: 12px;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 25px 15px;
+        }
+
+        .btn-voltar {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            text-decoration: none;
+            background: #18181f;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            transition: all 0.2s;
+        }
+
+        .btn-voltar:hover {
+            color: #fff;
+            border-color: var(--accent-yellow);
+        }
+
+        /* Layout Grid */
+        .booking-grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 25px;
+        }
+
+        @media (max-width: 850px) {
+            .booking-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .booking-form {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 24px;
+        }
+
+        .form-section-title {
+            font-size: 1.05rem;
+            margin-top: 0;
+            margin-bottom: 18px;
+            color: var(--accent-yellow);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 11px 12px;
+            background: #0a0a0c;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.92rem;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-yellow);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 500px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Botão de Localização Estilo WhatsApp */
+        .btn-location {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 10px;
+            background: rgba(37, 211, 102, 0.1);
+            color: var(--accent-wsp);
+            border: 1px dashed var(--accent-wsp);
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            margin-top: 6px;
+        }
+
+        .btn-location:hover, .btn-location:active {
+            background: var(--accent-wsp);
+            color: #000;
+            border-style: solid;
+        }
+
+        .location-status {
+            font-size: 0.78rem;
+            color: var(--accent-wsp);
+            margin-top: 6px;
+            display: none;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Grid de Horários Rápidos */
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .time-slot {
+            padding: 9px;
+            background: #0a0a0c;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: #fff;
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .time-slot:hover, .time-slot.active {
+            background: var(--accent-yellow);
+            color: #000;
+            font-weight: bold;
+            border-color: var(--accent-yellow);
+        }
+
+        /* Card do Resumo do Serviço */
+        .summary-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 20px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .service-preview {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 16px;
+        }
+
+        .service-icon {
+            width: 46px;
+            height: 46px;
+            background: rgba(255, 193, 7, 0.1);
+            color: var(--accent-yellow);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .service-info h3 {
+            margin: 0 0 3px 0;
+            font-size: 1.05rem;
+        }
+
+        .service-info p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+        }
+
+        .summary-details {
+            margin-bottom: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.88rem;
+        }
+
+        .summary-row span:first-child {
+            color: var(--text-muted);
+        }
+
+        .btn-confirm {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--accent-yellow);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.25s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 193, 7, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <a href="/servicos" class="btn-voltar"><i class="fa-solid fa-arrow-left"></i> Voltar para Serviços</a>
+
+    <div class="booking-grid">
+        
+        <!-- Formulário do Agendamento -->
+        <div class="booking-form">
+            
+            <!-- Seção 1: Data e Hora -->
+            <h2 class="form-section-title"><i class="fa-solid fa-calendar-check"></i> 1. Escolha Data e Hora</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Data Preferencial</label>
+                    <input type="date" id="data-agendamento" class="form-control" value="2026-09-10">
+                </div>
+                <div class="form-group">
+                    <label>Horário</label>
+                    <input type="time" id="hora-agendamento" class="form-control" value="09:00">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Horários disponíveis:</label>
+                <div class="time-slots">
+                    <div class="time-slot active" onclick="selecionarHora('08:00', this)">08:00</div>
+                    <div class="time-slot" onclick="selecionarHora('10:00', this)">10:00</div>
+                    <div class="time-slot" onclick="selecionarHora('14:00', this)">14:00</div>
+                    <div class="time-slot" onclick="selecionarHora('16:00', this)">16:00</div>
+                </div>
+            </div>
+
+            <!-- Seção 2: Dados do Cliente -->
+            <h2 class="form-section-title" style="margin-top: 28px;"><i class="fa-solid fa-user"></i> 2. Seus Dados</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nome Completo</label>
+                    <input type="text" id="cliente-nome" class="form-control" placeholder="Ex: João Silva">
+                </div>
+                <div class="form-group">
+                    <label>WhatsApp / Celular</label>
+                    <input type="text" id="cliente-whatsapp" class="form-control" placeholder="(61) 99999-9999">
+                </div>
+            </div>
+
+            <!-- Seção 3: Endereço & Localização GPS -->
+            <h2 class="form-section-title" style="margin-top: 28px;"><i class="fa-solid fa-location-dot"></i> 3. Endereço do Atendimento</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>CEP</label>
+                    <input type="text" id="cep" class="form-control" placeholder="72870-000" maxlength="9" onkeyup="buscarCEP(this.value)">
+                </div>
+                <div class="form-group">
+                    <label>Bairro / Cidade</label>
+                    <input type="text" id="bairro-cidade" class="form-control" placeholder="Valparaíso I - Valparaíso de Goiás/GO">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Rua, Número e Complemento</label>
+                <input type="text" id="rua-numero" class="form-control" placeholder="Rua 15, Quadra 20, Lote 05, Apt 102">
+            </div>
+
+            <!-- Botão Estilo WhatsApp GPS -->
+            <div class="form-group">
+                <label>Enviar localização exata (Opcional):</label>
+                <button type="button" class="btn-location" onclick="obterLocalizacaoGPS()">
+                    <i class="fa-solid fa-crosshairs"></i> Usar minha localização atual (GPS)
+                </button>
+                <div id="location-status" class="location-status">
+                    <i class="fa-solid fa-circle-check"></i> Localização GPS capturada com sucesso!
+                </div>
+                <!-- Campo oculta guardando as coordenadas para enviar ao Python -->
+                <input type="hidden" id="coords-gps" value="">
+            </div>
+
+            <div class="form-group" style="margin-top: 20px;">
+                <label>Observações / Detalhes do Serviço</label>
+                <textarea id="observacoes" class="form-control" rows="3" placeholder="Ex: Chuveiro Lorenzetti 7500W no banheiro social. Fiação já está pronta."></textarea>
+            </div>
+        </div>
+
+        <!-- Resumo do Serviço (Direita) -->
+        <div class="summary-card">
+            <h3 style="margin-top:0; margin-bottom: 14px; font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase;">Resumo da Solicitação</h3>
+            
+            <div class="service-preview">
+                <div class="service-icon">
+                    <i class="fa-solid {{ servico.icone if servico else 'fa-shower' }}"></i>
+                </div>
+                <div class="service-info">
+                    <h3>{{ servico.nome if servico else 'Chuveiros & 220V' }}</h3>
+                    <p>Instalação & Manutenção</p>
+                </div>
+            </div>
+
+            <div class="summary-details">
+                <div class="summary-row">
+                    <span>Estimativa de valor:</span>
+                    <strong style="color: var(--accent-yellow);">{{ servico.preco_estimado if servico else 'R$ 80 - R$ 180' }}</strong>
+                </div>
+                <div class="summary-row">
+                    <span>Duração média:</span>
+                    <strong>1 hora</strong>
+                </div>
+                <div class="summary-row">
+                    <span>Deslocamento:</span>
+                    <strong style="color: var(--accent-wsp);">Valparaíso / DF e Entorno</strong>
+                </div>
+            </div>
+
+            <button class="btn-confirm" onclick="enviarAgendamentoPython()">
+                Confirmar Agendamento <i class="fa-solid fa-check"></i>
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // 1. Função para selecionar horário visualmente
+    function selecionarHora(hora, el) {
+        document.getElementById('hora-agendamento').value = hora;
+        document.querySelectorAll('.time-slot').forEach(item => item.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    // 2. Busca automática de CEP via API ViaCEP
+    function buscarCEP(cep) {
+        cep = cep.replace(/\D/g, ''); // Remove caracteres não numéricos
+        if (cep.length === 8) {
+            fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.erro) {
+                        document.getElementById('bairro-cidade').value = `${data.bairro} - ${data.localidade}/${data.uf}`;
+                        document.getElementById('rua-numero').value = data.logradouro + ', ';
+                        document.getElementById('rua-numero').focus();
+                    } else {
+                        alert('CEP não encontrado. Digite seu endereço manualmente.');
+                    }
+                })
+                .catch(() => alert('Erro ao buscar o CEP.'));
+        }
+    }
+
+    // 3. Captura da Localização GPS (Estilo WhatsApp Mobile)
+    function obterLocalizacaoGPS() {
+        const statusDiv = document.getElementById('location-status');
+        
+        if (navigator.geolocation) {
+            statusDiv.style.display = 'flex';
+            statusDiv.style.color = '#ffc107';
+            statusDiv.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Obtendo sua localização GPS...';
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    const mapLink = `https://maps.google.com/?q=${lat},${lng}`;
+                    
+                    document.getElementById('coords-gps').value = mapLink;
+                    
+                    statusDiv.style.color = '#25D366';
+                    statusDiv.innerHTML = '<i class="fa-solid fa-circle-check"></i> Localização GPS capturada com sucesso!';
+                },
+                (error) => {
+                    statusDiv.style.color = '#ff4d4d';
+                    statusDiv.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Permissão negada ou GPS indisponível.';
+                }
+            );
+        } else {
+            alert('Geolocalização não é suportada pelo seu navegador.');
+        }
+    }
+
+    // 4. Envio dos Dados para o Backend Python (Flask / Django / FastAPI)
+    function enviarAgendamentoPython() {
+        const payload = {
+            data: document.getElementById('data-agendamento').value,
+            hora: document.getElementById('hora-agendamento').value,
+            nome: document.getElementById('cliente-nome').value,
+            whatsapp: document.getElementById('cliente-whatsapp').value,
+            cep: document.getElementById('cep').value,
+            bairro_cidade: document.getElementById('bairro-cidade').value,
+            rua_numero: document.getElementById('rua-numero').value,
+            link_gps: document.getElementById('coords-gps').value,
+            observacoes: document.getElementById('observacoes').value
+        };
+
+        if (!payload.nome || !payload.whatsapp) {
+            alert('Por favor, preencha seu Nome e WhatsApp!');
+            return;
+        }
+
+        fetch('/api/confirmar-agendamento', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert('Agendamento realizado com sucesso!');
+        })
+        .catch(err => {
+            console.log('Enviando dados simulados para Python:', payload);
+            alert('Agendamento gerado! Os dados já podem ser processados pelo seu backend Python.');
+        });
+    }
+</script>
+
+</body>
+</html>

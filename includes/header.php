@@ -39,6 +39,7 @@ if (usuario_autenticado()) verificarAutenticacao();
                     <li><a href="/">Home</a></li>
                     <li><a href="/servicos.php">Serviços</a></li>
                     <li><a href="/profissionais.php">Profissionais</a></li>
+                    <li><a href="/vagas.php">Vagas</a></li>
                     <li><a href="/blog/">Blog</a></li>
                     <li><a href="/contato.php">Contato</a></li>
                     
@@ -47,7 +48,7 @@ if (usuario_autenticado()) verificarAutenticacao();
                         <li><a href="/logout.php">Sair</a></li>
                     <?php elseif (usuario_autenticado()): ?>
                         <li><a href="/chat.php">Mensagens</a></li>
-                        <li><a href="/dashboard/">Minha Conta</a></li>
+                        <li><a href="<?php echo ($_SESSION['tipo_usuario'] ?? '') === 'empresa' ? '/empresa/painel.php' : '/dashboard/'; ?>">Minha Conta</a></li>
                         <li><a href="/logout.php">Sair</a></li>
                     <?php else: ?>
                         <li><a href="/login.php">Entrar</a></li>

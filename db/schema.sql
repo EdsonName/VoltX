@@ -7,9 +7,9 @@ CREATE TABLE usuarios (
     email VARCHAR(255) UNIQUE NOT NULL,
     senha VARCHAR(255) NOT NULL,
     telefone VARCHAR(20),
-    cpf CHAR(11) UNIQUE,
+    cpf CHAR(11),
     foto_perfil VARCHAR(1000),
-    tipo ENUM('cliente', 'profissional', 'admin') DEFAULT 'cliente',
+    tipo ENUM('cliente', 'profissional', 'empresa', 'admin') DEFAULT 'cliente',
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -143,6 +143,12 @@ CREATE TABLE comentarios_publicacoes (id INT AUTO_INCREMENT PRIMARY KEY, publica
 CREATE TABLE avaliacoes_profissionais (id INT AUTO_INCREMENT PRIMARY KEY, profissional_id INT NOT NULL, cliente_id INT NOT NULL, nota TINYINT NOT NULL, comentario VARCHAR(1000), criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP, atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, UNIQUE KEY avaliacao_unica(profissional_id,cliente_id), FOREIGN KEY(profissional_id) REFERENCES profissionais(id) ON DELETE CASCADE, FOREIGN KEY(cliente_id) REFERENCES usuarios(id) ON DELETE CASCADE);
 CREATE TABLE anuncios_profissionais (id INT AUTO_INCREMENT PRIMARY KEY, profissional_id INT NOT NULL, titulo VARCHAR(180) NOT NULL, texto VARCHAR(500), imagem_url VARCHAR(1000), link_url VARCHAR(1000), status ENUM('rascunho','pendente','aprovado','rejeitado','encerrado') DEFAULT 'pendente', inicio_em DATETIME, fim_em DATETIME, criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(profissional_id) REFERENCES profissionais(id) ON DELETE CASCADE);
 CREATE TABLE amizades (id INT AUTO_INCREMENT PRIMARY KEY, solicitante_id INT NOT NULL, destinatario_id INT NOT NULL, status ENUM('pendente','aceita','recusada','bloqueada') DEFAULT 'pendente', criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP, atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, UNIQUE KEY amizade_unica(solicitante_id,destinatario_id), FOREIGN KEY(solicitante_id) REFERENCES usuarios(id) ON DELETE CASCADE, FOREIGN KEY(destinatario_id) REFERENCES usuarios(id) ON DELETE CASCADE);
+CREATE TABLE empresas (id INT AUTO_INCREMENT PRIMARY KEY, usuario_id INT UNIQUE NOT NULL, cnpj VARCHAR(14) UNIQUE NOT NULL, razao_social VARCHAR(255) NOT NULL, nome_fantasia VARCHAR(255) NOT NULL, descricao TEXT, cidade VARCHAR(120), uf CHAR(2), site VARCHAR(1000), logo_url VARCHAR(1000), ativo BOOLEAN DEFAULT TRUE, criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE);
+CREATE TABLE curriculos (id INT AUTO_INCREMENT PRIMARY KEY, usuario_id INT UNIQUE NOT NULL, titulo VARCHAR(180) NOT NULL, resumo TEXT, experiencia TEXT, formacao TEXT, habilidades TEXT, cidade VARCHAR(120), uf CHAR(2), arquivo_url VARCHAR(1000), publico BOOLEAN DEFAULT TRUE, atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, FOREIGN KEY(usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE);
+CREATE TABLE vagas (id INT AUTO_INCREMENT PRIMARY KEY, empresa_id INT NOT NULL, titulo VARCHAR(180) NOT NULL, descricao TEXT NOT NULL, requisitos TEXT, cidade VARCHAR(120), uf CHAR(2), modalidade ENUM('presencial','hibrido','remoto') DEFAULT 'presencial', tipo_contrato VARCHAR(80), faixa_salarial VARCHAR(120), ativa BOOLEAN DEFAULT TRUE, criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(empresa_id) REFERENCES empresas(id) ON DELETE CASCADE);
+CREATE TABLE candidaturas (id INT AUTO_INCREMENT PRIMARY KEY, vaga_id INT NOT NULL, curriculo_id INT NOT NULL, mensagem TEXT, status ENUM('enviada','visualizada','entrevista','aprovada','recusada') DEFAULT 'enviada', criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP, UNIQUE KEY candidatura_unica(vaga_id,curriculo_id), FOREIGN KEY(vaga_id) REFERENCES vagas(id) ON DELETE CASCADE, FOREIGN KEY(curriculo_id) REFERENCES curriculos(id) ON DELETE CASCADE);
+CREATE TABLE seguidores_empresas (empresa_id INT NOT NULL, usuario_id INT NOT NULL, criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY(empresa_id,usuario_id), FOREIGN KEY(empresa_id) REFERENCES empresas(id) ON DELETE CASCADE, FOREIGN KEY(usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE);
+CREATE TABLE publicacoes_empresas (id INT AUTO_INCREMENT PRIMARY KEY, empresa_id INT NOT NULL, conteudo TEXT NOT NULL, imagem_url VARCHAR(1000), criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(empresa_id) REFERENCES empresas(id) ON DELETE CASCADE);
 
 ## Tabela: configuracoes_site
 CREATE TABLE configuracoes_site (

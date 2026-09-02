@@ -23,10 +23,12 @@ function verificarAutenticacao() {
     if (($_SESSION['tipo_usuario'] ?? '') !== 'admin' && !in_array($rota, ['/completar-cpf.php','/logout.php'], true)) {
         require_once __DIR__ . '/../config/database.php';
         global $mysqli;
-        $stmt = $mysqli->prepare('SELECT cpf FROM usuarios WHERE id=?');
+        $stmt = $mysqli->prepare('SELECT u.cpf,u.tipo,e.cnpj FROM usuarios u LEFT JOIN empresas e ON e.usuario_id=u.id WHERE u.id=?');
         $stmt->bind_param('i', $_SESSION['usuario_id']);
         $stmt->execute();
-        if (empty($stmt->get_result()->fetch_assoc()['cpf'])) {
+        $identidade=$stmt->get_result()->fetch_assoc();
+        if ($identidade['tipo']==='empresa' && $rota==='/amizade.php') { header('Location: /'); exit; }
+        if (($identidade['tipo']==='empresa' && empty($identidade['cnpj'])) || ($identidade['tipo']!=='empresa' && empty($identidade['cpf']))) {
             $_SESSION['cpf_retorno'] = $rota;
             header('Location: /completar-cpf.php');
             exit;

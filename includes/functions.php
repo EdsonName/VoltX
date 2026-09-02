@@ -59,6 +59,15 @@ function validar_cpf($cpf) {
     return true;
 }
 
+function validar_cnpj($cnpj) {
+    $cnpj = mb_strtoupper(preg_replace('/[^A-Z0-9]/i','',(string)$cnpj));
+    if (strlen($cnpj)!==14 || !preg_match('/^[A-Z0-9]{12}[0-9]{2}$/',$cnpj)) return false;
+    $calcular=function($base,$pesos){$soma=0;foreach(str_split($base) as $i=>$char)$soma+=(ord($char)-48)*$pesos[$i];$resto=$soma%11;return $resto<2?0:11-$resto;};
+    $d1=$calcular(substr($cnpj,0,12),[5,4,3,2,9,8,7,6,5,4,3,2]);$d2=$calcular(substr($cnpj,0,12).$d1,[6,5,4,3,2,9,8,7,6,5,4,3,2]);return substr($cnpj,-2)===(string)$d1.(string)$d2;
+}
+
+function limite_contas_cpf_atingido($cpf) { global $mysqli;$stmt=$mysqli->prepare('SELECT COUNT(*) total FROM usuarios WHERE cpf=?');$stmt->bind_param('s',$cpf);$stmt->execute();return (int)$stmt->get_result()->fetch_assoc()['total']>=2; }
+
 function mascarar_contato($valor, $visiveis=4) { $valor=(string)$valor; return mb_substr($valor,0,$visiveis).str_repeat('•',max(4,mb_strlen($valor)-$visiveis)); }
 
 function hash_senha($senha) {

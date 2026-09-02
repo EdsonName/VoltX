@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($usuario['tipo'] === 'admin') {
                 redirecionar('/admin/');
             } else {
-                redirecionar($redirect ?: '/dashboard/');
+                redirecionar($redirect ?: ($usuario['tipo']==='empresa'?'/empresa/painel.php':'/dashboard/'));
             }
         } else {
             $erro = 'Email ou senha incorretos';

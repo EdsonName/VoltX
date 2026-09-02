@@ -19,6 +19,8 @@ function verificarAutenticacao() {
         header('Location: /login.php');
         exit;
     }
+    require_once __DIR__ . '/../config/database.php';global $mysqli;
+    $presenca=$mysqli->prepare('UPDATE usuarios SET ultima_atividade=NOW() WHERE id=?');$presenca->bind_param('i',$_SESSION['usuario_id']);$presenca->execute();
     $rota = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
     if (($_SESSION['tipo_usuario'] ?? '') !== 'admin' && !in_array($rota, ['/completar-cpf.php','/logout.php'], true)) {
         require_once __DIR__ . '/../config/database.php';
@@ -47,6 +49,7 @@ function verificarAdmin() {
 }
 
 function logout() {
+    if (!empty($_SESSION['usuario_id'])) { require_once __DIR__ . '/../config/database.php'; global $mysqli; $stmt=$mysqli->prepare('UPDATE usuarios SET ultima_atividade=NULL,ultimo_logout=NOW() WHERE id=?');$stmt->bind_param('i',$_SESSION['usuario_id']);$stmt->execute(); }
     $_SESSION = [];
 
     if (ini_get('session.use_cookies')) {

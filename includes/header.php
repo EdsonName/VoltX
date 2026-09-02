@@ -17,6 +17,7 @@ if (usuario_autenticado()) verificarAutenticacao();
     <link rel="mask-icon" href="/assets/img/favicon-mask.svg?v=1" color="#ffd400">
         <link rel="stylesheet" href="/assets/css/style.css?v=3">
         <link rel="stylesheet" href="/assets/css/compact.css?v=1">
+        <link rel="stylesheet" href="/assets/css/presence.css?v=1">
     <?php foreach (($estilos_pagina ?? []) as $estilo): ?>
         <link rel="stylesheet" href="<?php echo htmlspecialchars($estilo, ENT_QUOTES, 'UTF-8'); ?>">
     <?php endforeach; ?>
@@ -28,6 +29,7 @@ if (usuario_autenticado()) verificarAutenticacao();
     <?php endif; ?>
 </head>
 <body>
+    <?php if(usuario_autenticado()): ?><script>const voltXPresence=()=>fetch('/presenca.php',{method:'POST',credentials:'same-origin'}).catch(()=>{});voltXPresence();setInterval(voltXPresence,60000);</script><?php endif; ?>
     <header>
         <div class="container">
             <a href="/" class="logo" aria-label="Voltar para a página inicial">

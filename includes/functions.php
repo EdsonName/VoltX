@@ -101,7 +101,7 @@ function executar_query($sql, $tipos = '', $valores = []) {
 
 function pegar_usuario($id) {
     global $mysqli;
-    $sql = 'SELECT id, nome, email, telefone, cpf, foto_perfil, tipo FROM usuarios WHERE id = ?';
+    $sql = 'SELECT id, nome, email, telefone, cpf, foto_perfil, tipo, ultima_atividade, ultimo_logout FROM usuarios WHERE id = ?';
     $stmt = $mysqli->prepare($sql);
     $stmt->bind_param('i', $id);
     $stmt->execute();
@@ -116,6 +116,23 @@ function pegar_servicos() {
     return $result->fetch_all(MYSQLI_ASSOC);
 }
 
+function usuario_esta_online($usuario) {
+    return !empty($usuario['ultima_atividade']) && strtotime($usuario['ultima_atividade']) >= time()-120;
+}
+
+function texto_presenca($usuario) {
+    if (usuario_esta_online($usuario)) return 'Online agora';
+    $referencia=$usuario['ultimo_logout']??$usuario['ultima_atividade']??null;
+    return $referencia ? 'Offline desde '.date('H:i',strtotime($referencia)) : 'Offline';
+}
+
+function tempo_medio_resposta_profissional($profissional_id) {
+    global $mysqli;
+    $stmt=$mysqli->prepare('SELECT p.usuario_id FROM profissionais p WHERE p.id=?');$stmt->bind_param('i',$profissional_id);$stmt->execute();$uid=(int)($stmt->get_result()->fetch_assoc()['usuario_id']??0);if(!$uid)return null;
+    $sql='SELECT AVG(TIMESTAMPDIFF(SECOND,m.criado_em,(SELECT MIN(r.criado_em) FROM mensagens r WHERE r.conversa_id=m.conversa_id AND r.remetente_id=? AND r.id>m.id))) media FROM mensagens m JOIN conversas c ON c.id=m.conversa_id WHERE c.profissional_id=? AND m.remetente_id<>? AND COALESCE((SELECT p2.remetente_id FROM mensagens p2 WHERE p2.conversa_id=m.conversa_id AND p2.id<m.id ORDER BY p2.id DESC LIMIT 1),0)<>m.remetente_id';
+    $stmt=$mysqli->prepare($sql);$stmt->bind_param('iii',$uid,$profissional_id,$uid);$stmt->execute();$seg=$stmt->get_result()->fetch_assoc()['media']??null;if($seg===null)return null;$seg=(int)$seg;if($seg<60)return 'menos de 1 minuto';if($seg<3600)return round($seg/60).' minutos';if($seg<86400)return round($seg/3600).' horas';return round($seg/86400).' dias';
+}
+
 function pegar_perfil_profissional_por_usuario($usuario_id) {
     global $mysqli;
     $stmt = $mysqli->prepare('SELECT p.*, u.nome, u.email, u.telefone FROM profissionais p JOIN usuarios u ON u.id=p.usuario_id WHERE p.usuario_id=? LIMIT 1');
@@ -126,7 +143,7 @@ function pegar_perfil_profissional_por_usuario($usuario_id) {
 
 function pegar_perfil_profissional($id) {
     global $mysqli;
-    $stmt = $mysqli->prepare('SELECT p.*, u.nome, u.telefone FROM profissionais p JOIN usuarios u ON u.id=p.usuario_id WHERE p.id=? AND p.ativo=1 LIMIT 1');
+    $stmt = $mysqli->prepare('SELECT p.*, u.nome, u.telefone, u.ultima_atividade, u.ultimo_logout FROM profissionais p JOIN usuarios u ON u.id=p.usuario_id WHERE p.id=? AND p.ativo=1 LIMIT 1');
     $stmt->bind_param('i', $id);
     $stmt->execute();
     return $stmt->get_result()->fetch_assoc();

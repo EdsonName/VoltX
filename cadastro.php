@@ -2,6 +2,8 @@
 // cadastro.php
 // Página de cadastro
 $titulo_pagina = 'Cadastro';
+$estilos_pagina = ['/assets/css/cadastro.css?v=1'];
+$scripts_pagina = ['/assets/js/cadastro.js?v=1'];
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/includes/functions.php';
@@ -9,9 +11,9 @@ $redirect = url_interna_segura($_POST['redirect'] ?? $_GET['redirect'] ?? '/dash
 $tipo_inicial = ($_POST['tipo'] ?? $_GET['tipo'] ?? 'cliente') === 'profissional' ? 'profissional' : 'cliente';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nome = sanitizar($_POST['nome']);
-    $email = sanitizar($_POST['email']);
-    $telefone = sanitizar($_POST['telefone']);
+    $nome = normalizar_nome($_POST['nome'] ?? '');
+    $email = normalizar_email($_POST['email'] ?? '');
+    $telefone = normalizar_telefone_br($_POST['telefone'] ?? '');
     $senha = $_POST['senha'];
     $confirmar_senha = $_POST['confirmar_senha'];
     $tipo = ($_POST['tipo'] ?? 'cliente') === 'profissional' ? 'profissional' : 'cliente';
@@ -23,11 +25,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     if (!validar_email($email)) {
-        $erros[] = 'Email inválido';
+        $erros[] = 'E-mail inválido ou incompatível com as regras do provedor.';
     }
+    if (!in_array(strlen($telefone), [10, 11], true)) $erros[] = 'Informe um telefone brasileiro com DDD.';
     
-    if (strlen($senha) < 6) {
-        $erros[] = 'Senha deve ter no mínimo 6 caracteres';
+    if (!senha_forte($senha)) {
+        $erros[] = 'A senha deve ter 8 caracteres, letra maiúscula, minúscula, número e caractere especial.';
     }
     
     if ($senha !== $confirmar_senha) {
@@ -91,27 +94,27 @@ require_once __DIR__ . '/includes/header.php';
             </div>
             <div class="form-group">
                 <label for="nome">Nome Completo:</label>
-                <input type="text" id="nome" name="nome" required>
+                <input type="text" id="nome" name="nome" value="<?php echo sanitizar($_POST['nome'] ?? ''); ?>" autocomplete="name" required>
             </div>
             
             <div class="form-group">
                 <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
+                <input type="email" id="email" name="email" value="<?php echo sanitizar($_POST['email'] ?? ''); ?>" autocomplete="email" required><small id="email-feedback"></small>
             </div>
             
             <div class="form-group">
                 <label for="telefone">Telefone:</label>
-                <input type="tel" id="telefone" name="telefone" required>
+                <input type="tel" id="telefone" name="telefone" value="<?php echo sanitizar($_POST['telefone'] ?? ''); ?>" inputmode="tel" autocomplete="tel" required>
             </div>
             
             <div class="form-group">
                 <label for="senha">Senha:</label>
-                <input type="password" id="senha" name="senha" required>
+                <div class="password-input"><input type="password" id="senha" name="senha" autocomplete="new-password" required><button type="button" data-toggle-password="senha">Ver</button></div><ul class="password-rules"><li data-rule="length">8 caracteres</li><li data-rule="upper">Uma maiúscula</li><li data-rule="lower">Uma minúscula</li><li data-rule="number">Um número</li><li data-rule="special">Um caractere especial</li></ul>
             </div>
             
             <div class="form-group">
                 <label for="confirmar_senha">Confirmar Senha:</label>
-                <input type="password" id="confirmar_senha" name="confirmar_senha" required>
+                <div class="password-input"><input type="password" id="confirmar_senha" name="confirmar_senha" autocomplete="new-password" required><button type="button" data-toggle-password="confirmar_senha">Ver</button></div><small id="password-match">As senhas ainda não coincidem.</small>
             </div>
             
             <button type="submit" class="btn btn-primary">Cadastrar</button>

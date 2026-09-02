@@ -9,7 +9,47 @@ function sanitizar($dados) {
 }
 
 function validar_email($email) {
-    return filter_var($email, FILTER_VALIDATE_EMAIL);
+    $email = mb_strtolower(trim($email));
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return false;
+    [$local, $dominio] = explode('@', $email, 2);
+    $regras = [
+        'gmail.com' => '/^[a-z0-9.]+$/',
+        'googlemail.com' => '/^[a-z0-9.]+$/',
+        'outlook.com' => '/^[a-z0-9._-]+$/',
+        'hotmail.com' => '/^[a-z0-9._-]+$/',
+        'yahoo.com' => '/^[a-z0-9._-]+$/',
+        'yahoo.com.br' => '/^[a-z0-9._-]+$/',
+    ];
+    return !isset($regras[$dominio]) || (bool)preg_match($regras[$dominio], $local);
+}
+
+function normalizar_email($email) { return mb_strtolower(trim((string)$email)); }
+
+function normalizar_nome($nome) {
+    $nome = preg_replace('/\s+/u', ' ', trim((string)$nome));
+    $conectivos = ['da','das','de','do','dos','e'];
+    return implode(' ', array_map(function($parte) use ($conectivos) {
+        $minuscula = mb_strtolower($parte, 'UTF-8');
+        return in_array($minuscula, $conectivos, true) ? $minuscula : mb_convert_case($minuscula, MB_CASE_TITLE, 'UTF-8');
+    }, explode(' ', $nome)));
+}
+
+function normalizar_telefone_br($telefone) {
+    $digitos = preg_replace('/\D/', '', (string)$telefone);
+    if (str_starts_with($digitos, '55') && strlen($digitos) >= 12) $digitos = substr($digitos, 2);
+    if (strlen($digitos) >= 11 && $digitos[0] === '0') $digitos = substr($digitos, 1);
+    return substr($digitos, 0, 11);
+}
+
+function formatar_telefone_formulario($telefone) {
+    $n = normalizar_telefone_br($telefone);
+    if (strlen($n) === 11) return sprintf('(%s) %s-%s', substr($n,0,2), substr($n,2,5), substr($n,7));
+    if (strlen($n) === 10) return sprintf('(%s) %s-%s', substr($n,0,2), substr($n,2,4), substr($n,6));
+    return $n;
+}
+
+function senha_forte($senha) {
+    return strlen($senha) >= 8 && preg_match('/[A-Z]/', $senha) && preg_match('/[a-z]/', $senha) && preg_match('/\d/', $senha) && preg_match('/[^A-Za-z0-9]/', $senha);
 }
 
 function hash_senha($senha) {

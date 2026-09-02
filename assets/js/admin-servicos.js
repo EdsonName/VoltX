@@ -1,5 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
     const campo = id => document.querySelector(`#${id}`);
+    document.querySelectorAll('.admin-flip-card').forEach(card => {
+        const abrir = card.querySelector('.admin-flip-trigger');
+        const fechar = card.querySelector('.flip-back');
+        const frente = card.querySelector('.service-card-front');
+        const verso = card.querySelector('.service-card-back');
+        const definirEstado = aberto => {
+            card.classList.toggle('is-flipped', aberto);
+            frente?.setAttribute('aria-hidden', String(aberto));
+            verso?.setAttribute('aria-hidden', String(!aberto));
+            (aberto ? verso?.querySelector('input[name="nome"]') : abrir)?.focus();
+        };
+        abrir?.addEventListener('click', () => definirEstado(true));
+        fechar?.addEventListener('click', () => definirEstado(false));
+        card.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && card.classList.contains('is-flipped')) definirEstado(false);
+        });
+    });
+
     const preview = document.querySelector('.service-preview');
     if (!preview) return;
 

@@ -13,4 +13,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const sintoma = document.querySelector('#diag-sintoma')?.value;
         abrirWhatsapp(event.currentTarget.dataset.phone, `ALERTA URGENTE - VOLTX\n\nOlá Edson, estou com o seguinte problema: ${sintoma}. Pode me atender agora?`);
     });
+
+    document.querySelectorAll('.service-flip-card').forEach(card => {
+        const frente = card.querySelector('.service-card-front');
+        const verso = card.querySelector('.service-card-back');
+        const abrir = card.querySelector('.flip-trigger');
+        const fechar = card.querySelector('.flip-back');
+        const definirEstado = aberto => {
+            card.classList.toggle('is-flipped', aberto);
+            abrir?.setAttribute('aria-expanded', String(aberto));
+            frente?.setAttribute('aria-hidden', String(aberto));
+            verso?.setAttribute('aria-hidden', String(!aberto));
+            (aberto ? fechar : abrir)?.focus();
+        };
+        abrir?.addEventListener('click', () => definirEstado(true));
+        fechar?.addEventListener('click', () => definirEstado(false));
+        card.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && card.classList.contains('is-flipped')) definirEstado(false);
+        });
+        const solicitado = new URLSearchParams(window.location.search).get('detalhes');
+        if (solicitado && solicitado === card.dataset.serviceId && !card.classList.contains('is-paused')) {
+            definirEstado(true);
+            card.scrollIntoView({behavior: 'smooth', block: 'center'});
+        }
+    });
 });

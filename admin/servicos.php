@@ -1,7 +1,7 @@
 <?php
 $titulo_pagina = 'Gerenciar Serviços';
-$estilos_pagina = ['/assets/css/servicos.css?v=5'];
-$scripts_pagina = ['/assets/js/admin-servicos.js'];
+$estilos_pagina = ['/assets/css/servicos.css?v=6'];
+$scripts_pagina = ['/assets/js/admin-servicos.js?v=2'];
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/functions.php';
 verificarAdmin();
@@ -130,7 +130,7 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="form-grid">
             <div class="form-group form-span"><label for="nome">Nome do serviço</label><input id="nome" name="nome" maxlength="255" value="<?php echo sanitizar($servico_edicao['nome'] ?? ''); ?>" required></div>
             <div class="form-group form-span"><label for="descricao">Descrição</label><textarea id="descricao" name="descricao" rows="4" required><?php echo sanitizar($servico_edicao['descricao'] ?? ''); ?></textarea></div>
-            <div class="form-group form-span"><label for="imagem_url">URL da imagem</label><input id="imagem_url" name="imagem_url" type="url" placeholder="https://exemplo.com/imagem.jpg" value="<?php echo sanitizar($servico_edicao['imagem_url'] ?? ''); ?>"><small>Use uma imagem horizontal, preferencialmente 700 × 400 px.</small></div>
+            <div class="form-group form-span"><label for="imagem_url">URL da imagem</label><input id="imagem_url" name="imagem_url" type="text" inputmode="url" placeholder="https://exemplo.com/imagem.jpg" value="<?php echo sanitizar($servico_edicao['imagem_url'] ?? ''); ?>"><small>Use uma imagem horizontal, preferencialmente 700 × 400 px.</small></div>
             <div class="upload-divider form-span"><span>ou</span></div>
             <div class="form-group form-span"><label for="imagem_arquivo">Enviar foto do computador</label><label class="file-upload" for="imagem_arquivo"><span class="file-upload-icon">↥</span><span><strong>Escolher uma imagem</strong><small>JPG, PNG ou WebP — imagens 4K são aceitas</small></span></label><input class="file-input" id="imagem_arquivo" name="imagem_arquivo" type="file" accept="image/jpeg,image/png,image/webp"></div>
             <div class="form-group"><label for="preco">Preço (R$)</label><input id="preco" name="preco" type="number" min="0" step="0.01" value="<?php echo sanitizar($servico_edicao['preco'] ?? ''); ?>" required></div>
@@ -150,17 +150,26 @@ require_once __DIR__ . '/../includes/header.php';
         $imagem_card = $servico['imagem_url'] ?: $imagens_padrao[$indice % count($imagens_padrao)];
         $beneficios_card = array_values(array_filter(array_map('trim', preg_split('/\R/', $servico['beneficios'] ?? ''))));
     ?>
-        <article class="catalog-card admin-service-card <?php echo !empty($servico['destaque_emergencia']) ? 'is-emergency' : ''; ?>">
-            <a class="card-edit-link" href="?editar=<?php echo (int)$servico['id']; ?>" aria-label="Editar <?php echo sanitizar($servico['nome']); ?>"></a>
+        <div class="service-flip-card admin-flip-card"><div class="service-flip-inner">
+        <article class="catalog-card admin-service-card service-card-front <?php echo !empty($servico['destaque_emergencia']) ? 'is-emergency' : ''; ?>">
             <div class="catalog-image"><img src="<?php echo sanitizar($imagem_card); ?>" alt="<?php echo sanitizar($servico['nome']); ?>" loading="lazy"><span class="catalog-badge"><?php echo sanitizar($servico['selo'] ?: 'Profissional'); ?></span><span class="admin-card-status <?php echo !$servico['ativo'] ? 'is-hidden' : (!empty($servico['pausado']) ? 'is-paused' : 'is-active'); ?>"><?php echo !$servico['ativo'] ? 'Oculto' : (!empty($servico['pausado']) ? 'Pausado' : 'Publicado'); ?></span></div>
             <div class="catalog-body"><div><h2><span class="service-icon">⚡</span><?php echo sanitizar($servico['nome']); ?></h2><div class="price-row"><div class="catalog-price">A partir de R$ <?php echo number_format($servico['preco'],2,',','.'); ?></div><span class="estimated-price-badge" title="Valor médio sujeito à avaliação"><i></i> Valor estimado</span></div><p><?php echo sanitizar($servico['descricao']); ?></p><ul class="service-facts"><?php if ($beneficios_card): foreach (array_slice($beneficios_card,0,2) as $beneficio): ?><li><span>✓</span><?php echo sanitizar($beneficio); ?></li><?php endforeach; else: ?><li><span>✓</span><?php echo (int)$servico['duracao_minutos']; ?> minutos</li><?php endif; ?></ul></div>
-                <div class="admin-card-actions"><span class="edit-hint">✎ Clique para editar</span><div class="state-actions">
+                <div class="admin-card-actions"><button class="edit-hint admin-flip-trigger" type="button">✎ Editar no card</button><div class="state-actions">
                     <?php if (!$servico['ativo'] || !empty($servico['pausado'])): ?><form method="POST"><input type="hidden" name="csrf_token" value="<?php echo token_csrf(); ?>"><input type="hidden" name="acao" value="estado"><input type="hidden" name="estado" value="publicar"><input type="hidden" name="id" value="<?php echo (int)$servico['id']; ?>"><button class="visibility-button publish" type="submit">Publicar</button></form><?php endif; ?>
                     <?php if ($servico['ativo'] && empty($servico['pausado'])): ?><form method="POST"><input type="hidden" name="csrf_token" value="<?php echo token_csrf(); ?>"><input type="hidden" name="acao" value="estado"><input type="hidden" name="estado" value="pausar"><input type="hidden" name="id" value="<?php echo (int)$servico['id']; ?>"><button class="visibility-button pause" type="submit">Pausar</button></form><?php endif; ?>
                     <?php if ($servico['ativo']): ?><form method="POST"><input type="hidden" name="csrf_token" value="<?php echo token_csrf(); ?>"><input type="hidden" name="acao" value="estado"><input type="hidden" name="estado" value="ocultar"><input type="hidden" name="id" value="<?php echo (int)$servico['id']; ?>"><button class="visibility-button hide" type="submit">Ocultar</button></form><?php endif; ?>
                 </div></div>
             </div>
         </article>
+        <article class="catalog-card service-card-back admin-edit-back" aria-hidden="true">
+            <form method="POST" enctype="multipart/form-data" class="inline-card-form">
+                <input type="hidden" name="csrf_token" value="<?php echo token_csrf(); ?>"><input type="hidden" name="acao" value="salvar"><input type="hidden" name="id" value="<?php echo (int)$servico['id']; ?>">
+                <?php if ($servico['ativo']): ?><input type="hidden" name="ativo" value="1"><?php endif; ?><?php if ($servico['destaque_emergencia']): ?><input type="hidden" name="destaque_emergencia" value="1"><?php endif; ?>
+                <div class="card-back-header"><button class="flip-back" type="button">← Cancelar</button><span>Editar serviço</span></div>
+                <div class="inline-form-scroll"><label>Nome<input name="nome" value="<?php echo sanitizar($servico['nome']); ?>" required></label><div class="inline-fields"><label>Preço<input name="preco" type="number" min="0" step=".01" value="<?php echo sanitizar($servico['preco']); ?>" required></label><label>Duração<input name="duracao_minutos" type="number" min="1" value="<?php echo (int)$servico['duracao_minutos']; ?>" required></label></div><label>Descrição<textarea name="descricao" rows="3" required><?php echo sanitizar($servico['descricao']); ?></textarea></label><label>Selo<input name="selo" maxlength="80" value="<?php echo sanitizar($servico['selo'] ?? ''); ?>"></label><label>Benefícios<textarea name="beneficios" rows="3"><?php echo sanitizar($servico['beneficios'] ?? ''); ?></textarea></label><label>URL da imagem<input name="imagem_url" type="text" inputmode="url" value="<?php echo sanitizar($servico['imagem_url'] ?? ''); ?>"></label><label class="inline-file">Trocar foto<input name="imagem_arquivo" type="file" accept="image/jpeg,image/png,image/webp"></label></div>
+                <button class="inline-save" type="submit">Salvar alterações</button>
+            </form>
+        </article></div></div>
     <?php endforeach; ?></div>
     <?php else: ?><div class="empty-state"><strong>Nenhum serviço cadastrado.</strong><p>Crie o primeiro serviço para exibi-lo no site.</p></div><?php endif; ?>
 </div>

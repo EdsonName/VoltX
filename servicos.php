@@ -1,7 +1,7 @@
 <?php
 $titulo_pagina = 'Serviços';
-$estilos_pagina = ['/assets/css/servicos.css?v=5'];
-$scripts_pagina = ['/assets/js/servicos.js'];
+$estilos_pagina = ['/assets/css/servicos.css?v=6'];
+$scripts_pagina = ['/assets/js/servicos.js?v=3'];
 require_once __DIR__ . '/includes/functions.php';
 $servicos = pegar_servicos();
 $servicos_disponiveis = array_values(array_filter($servicos, fn($servico) => empty($servico['pausado'])));
@@ -26,12 +26,21 @@ require_once __DIR__ . '/includes/header.php';
         $beneficios = array_values(array_filter(array_map('trim', preg_split('/\R/', $servico['beneficios'] ?? ''))));
         $mensagem = 'Olá Edson! Vi no site VoltX e gostaria de um orçamento para: ' . $servico['nome'] . '.';
     ?>
-        <article class="catalog-card <?php echo $emergencia ? 'is-emergency' : ''; ?> <?php echo $pausado ? 'is-paused' : ''; ?>" style="--delay:<?php echo min($indice,8)*70; ?>ms" <?php echo $pausado ? 'aria-disabled="true"' : ''; ?>>
-            <div class="catalog-image"><img src="<?php echo sanitizar($imagem); ?>" alt="Serviço de <?php echo sanitizar($servico['nome']); ?>" loading="lazy"><span class="catalog-badge"><?php echo $pausado ? 'Temporariamente pausado' : sanitizar($servico['selo'] ?: ($emergencia ? 'Atendimento urgente' : 'Profissional')); ?></span></div>
-            <div class="catalog-body"><div><h2><span class="service-icon">⚡</span><?php echo sanitizar($servico['nome']); ?></h2><div class="price-row"><div class="catalog-price">A partir de R$ <?php echo number_format($servico['preco'],2,',','.'); ?></div><span class="estimated-price-badge" title="Este é um valor médio. O preço final pode variar conforme a avaliação do serviço."><i></i> Valor estimado</span></div><p><?php echo sanitizar($servico['descricao']); ?></p><ul class="service-facts"><?php if ($beneficios): foreach (array_slice($beneficios,0,3) as $beneficio): ?><li><span>✓</span> <?php echo sanitizar($beneficio); ?></li><?php endforeach; else: ?><li><span>✓</span> Duração estimada: <?php echo (int)$servico['duracao_minutos']; ?> minutos</li><li><span>✓</span> Atendimento com segurança e garantia</li><?php endif; ?></ul></div>
-                <div class="catalog-actions"><?php if ($pausado): ?><span class="paused-message">Serviço indisponível no momento</span><?php else: ?><a class="whatsapp-button" href="https://wa.me/<?php echo $whatsapp; ?>?text=<?php echo rawurlencode($mensagem); ?>" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">◉</span> Pedir no WhatsApp</a><a class="details-link" href="/servico-detalhes.php?id=<?php echo (int)$servico['id']; ?>">Ver detalhes →</a><?php endif; ?></div>
+        <div class="service-flip-card <?php echo $pausado ? 'is-paused' : ''; ?>" data-service-id="<?php echo (int)$servico['id']; ?>" style="--delay:<?php echo min($indice,8)*70; ?>ms">
+            <div class="service-flip-inner">
+                <article class="catalog-card service-card-front <?php echo $emergencia ? 'is-emergency' : ''; ?> <?php echo $pausado ? 'is-paused' : ''; ?>" <?php echo $pausado ? 'aria-disabled="true"' : ''; ?>>
+                    <div class="catalog-image"><img src="<?php echo sanitizar($imagem); ?>" alt="Serviço de <?php echo sanitizar($servico['nome']); ?>" loading="lazy"><span class="catalog-badge"><?php echo $pausado ? 'Temporariamente pausado' : sanitizar($servico['selo'] ?: ($emergencia ? 'Atendimento urgente' : 'Profissional')); ?></span></div>
+                    <div class="catalog-body"><div><h2><span class="service-icon">⚡</span><?php echo sanitizar($servico['nome']); ?></h2><div class="price-row"><div class="catalog-price">A partir de R$ <?php echo number_format($servico['preco'],2,',','.'); ?></div><span class="estimated-price-badge" title="Este é um valor médio. O preço final pode variar conforme a avaliação do serviço."><i></i> Valor estimado</span></div><p><?php echo sanitizar($servico['descricao']); ?></p><ul class="service-facts"><?php if ($beneficios): foreach (array_slice($beneficios,0,3) as $beneficio): ?><li><span>✓</span> <?php echo sanitizar($beneficio); ?></li><?php endforeach; else: ?><li><span>✓</span> Duração estimada: <?php echo (int)$servico['duracao_minutos']; ?> minutos</li><li><span>✓</span> Atendimento com segurança e garantia</li><?php endif; ?></ul></div>
+                        <div class="catalog-actions"><?php if ($pausado): ?><span class="paused-message">Serviço indisponível no momento</span><?php else: ?><a class="whatsapp-button" href="https://wa.me/<?php echo $whatsapp; ?>?text=<?php echo rawurlencode($mensagem); ?>" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">◉</span> Pedir no WhatsApp</a><button class="details-link flip-trigger" type="button" aria-expanded="false">Ver detalhes ↻</button><?php endif; ?></div>
+                    </div>
+                </article>
+                <article class="catalog-card service-card-back" aria-hidden="true">
+                    <div class="card-back-header"><button class="flip-back" type="button" aria-label="Voltar para a frente do card">← Voltar</button><span>Detalhes</span></div>
+                    <div class="card-back-content"><span class="eyebrow">Serviço VoltX</span><h2><?php echo sanitizar($servico['nome']); ?></h2><p><?php echo nl2br(sanitizar($servico['descricao'])); ?></p><div class="detail-metrics"><div><small>Valor médio</small><strong>R$ <?php echo number_format($servico['preco'],2,',','.'); ?></strong></div><div><small>Duração estimada</small><strong><?php echo (int)$servico['duracao_minutos']; ?> min</strong></div></div><h3>O que está incluído</h3><ul class="service-facts"><?php if ($beneficios): foreach ($beneficios as $beneficio): ?><li><span>✓</span><?php echo sanitizar($beneficio); ?></li><?php endforeach; else: ?><li><span>✓</span>Atendimento profissional</li><li><span>✓</span>Serviço com garantia</li><?php endif; ?></ul></div>
+                    <div class="card-back-actions"><a class="whatsapp-button" href="https://wa.me/<?php echo $whatsapp; ?>?text=<?php echo rawurlencode($mensagem); ?>" target="_blank" rel="noopener noreferrer">◉ Pedir orçamento</a><?php if (usuario_autenticado()): ?><a class="schedule-link" href="/agendar.php?servico_id=<?php echo (int)$servico['id']; ?>">Agendar serviço</a><?php endif; ?></div>
+                </article>
             </div>
-        </article>
+        </div>
     <?php endforeach; ?></div>
     <?php else: ?><div class="services-empty"><span>⚡</span><h2>Novos serviços em breve</h2><p>Fale conosco para verificar como podemos ajudar.</p><a href="/contato.php" class="btn">Entrar em contato</a></div><?php endif; ?>
 

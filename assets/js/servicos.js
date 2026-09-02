@@ -28,6 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         abrir?.addEventListener('click', () => definirEstado(true));
         fechar?.addEventListener('click', () => definirEstado(false));
+        card.addEventListener('click', event => {
+            if (card.classList.contains('is-paused')) return;
+            if (event.target.closest('a, button, input, select, textarea, label')) return;
+            definirEstado(!card.classList.contains('is-flipped'));
+        });
         card.addEventListener('keydown', event => {
             if (event.key === 'Escape' && card.classList.contains('is-flipped')) definirEstado(false);
         });

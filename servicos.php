@@ -1,7 +1,7 @@
 <?php
 $titulo_pagina = 'Serviços';
-$estilos_pagina = ['/assets/css/servicos.css?v=6'];
-$scripts_pagina = ['/assets/js/servicos.js?v=3'];
+$estilos_pagina = ['/assets/css/servicos.css?v=7'];
+$scripts_pagina = ['/assets/js/servicos.js?v=4'];
 require_once __DIR__ . '/includes/functions.php';
 $servicos = pegar_servicos();
 $servicos_disponiveis = array_values(array_filter($servicos, fn($servico) => empty($servico['pausado'])));

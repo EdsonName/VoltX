@@ -44,6 +44,7 @@ require_once __DIR__ . '/../includes/functions.php';
                         <li><a href="/admin/">Painel Admin</a></li>
                         <li><a href="/logout.php">Sair</a></li>
                     <?php elseif (usuario_autenticado()): ?>
+                        <li><a href="/chat.php">Mensagens</a></li>
                         <li><a href="/dashboard/">Minha Conta</a></li>
                         <li><a href="/logout.php">Sair</a></li>
                     <?php else: ?>

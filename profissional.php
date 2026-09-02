@@ -1,5 +1,5 @@
 <?php
-$titulo_pagina='Perfil profissional'; $estilos_pagina=['/assets/css/marketplace.css?v=1']; require_once __DIR__.'/includes/functions.php';
+$titulo_pagina='Perfil profissional'; $estilos_pagina=['/assets/css/marketplace.css?v=1','/assets/css/chat-contact.css?v=1']; require_once __DIR__.'/includes/functions.php';
 $perfil=pegar_perfil_profissional((int)($_GET['id']??0)); if(!$perfil){http_response_code(404);$titulo_pagina='Profissional não encontrado';}
 $ofertas=[]; if($perfil){$stmt=$mysqli->prepare('SELECT * FROM ofertas_profissionais WHERE profissional_id=? AND ativo=1 ORDER BY criado_em DESC');$stmt->bind_param('i',$perfil['id']);$stmt->execute();$ofertas=$stmt->get_result()->fetch_all(MYSQLI_ASSOC);$telefone_profissional=preg_replace('/\D/','',$perfil['telefone']);if($telefone_profissional&&!str_starts_with($telefone_profissional,'55'))$telefone_profissional='55'.$telefone_profissional;} require_once __DIR__.'/includes/header.php';
 ?>

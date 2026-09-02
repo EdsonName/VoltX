@@ -69,6 +69,14 @@ function pegar_perfil_profissional($id) {
     return $stmt->get_result()->fetch_assoc();
 }
 
+function pegar_conversa_autorizada($conversa_id, $usuario_id) {
+    global $mysqli;
+    $stmt = $mysqli->prepare('SELECT c.*,p.usuario_id AS profissional_usuario_id,p.titulo_profissional,u_cliente.nome AS cliente_nome,u_prof.nome AS profissional_nome FROM conversas c JOIN profissionais p ON p.id=c.profissional_id JOIN usuarios u_cliente ON u_cliente.id=c.cliente_id JOIN usuarios u_prof ON u_prof.id=p.usuario_id WHERE c.id=? AND (c.cliente_id=? OR p.usuario_id=?) LIMIT 1');
+    $stmt->bind_param('iii', $conversa_id, $usuario_id, $usuario_id);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_assoc();
+}
+
 function pegar_todos_servicos() {
     global $mysqli;
     $result = $mysqli->query('SELECT * FROM servicos ORDER BY criado_em DESC, nome');

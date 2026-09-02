@@ -34,5 +34,8 @@
     <?php foreach (($scripts_pagina ?? []) as $script): ?>
         <script src="<?php echo htmlspecialchars($script, ENT_QUOTES, 'UTF-8'); ?>"></script>
     <?php endforeach; ?>
+    <?php if (($caminho_atual ?? '') === '/profissional.php' && !empty($perfil['id'])): $destino_chat_perfil = '/chat.php?profissional_id=' . (int)$perfil['id']; ?>
+        <script>const whatsapp=document.querySelector('.contact-professional');if(whatsapp){const chat=document.createElement('a');chat.className='contact-professional internal-chat';chat.textContent='✉ Conversar pelo chat da VoltX';chat.href=<?php echo json_encode(usuario_autenticado() ? $destino_chat_perfil : '/login.php?redirect=' . rawurlencode($destino_chat_perfil)); ?>;whatsapp.before(chat)}</script>
+    <?php endif; ?>
 </body>
 </html>

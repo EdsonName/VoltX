@@ -2,14 +2,14 @@
 setlocal EnableExtensions
 
 REM =========================================================
-REM VolX - Iniciador Docker
+REM VoltX - Iniciador Docker
 REM Verifica dependencias, instala se necessario e sobe o ambiente
 REM =========================================================
 
 cd /d "%~dp0"
 
 echo =====================================================
-echo VolX - Inicializacao com Docker
+echo VoltX - Inicializacao com Docker
 echo =====================================================
 
 REM -------------------------------
@@ -111,7 +111,7 @@ REM -------------------------------
 REM 6) Verificacao final
 REM -------------------------------
 echo.
-echo [OK] Ambiente VolX iniciado com sucesso.
+echo [OK] Ambiente VoltX iniciado com sucesso.
 echo [INFO] Acesse: http://localhost:8000
 echo [INFO] Banco local: localhost:3306
 echo.

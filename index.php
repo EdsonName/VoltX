@@ -53,7 +53,7 @@ require_once __DIR__ . '/includes/header.php';
             <span class="eyebrow">Precisa de ajuda?</span>
             <h2>Seu projeto começa com uma boa conversa.</h2>
             <p style="margin:16px 0 24px">Conte o que você precisa e receba uma orientação clara, sem compromisso.</p>
-            <a href="/contato.php" class="btn">Falar com a VolX →</a>
+            <a href="/contato.php" class="btn">Falar com a VoltX →</a>
         </div>
     </div>
 </section>

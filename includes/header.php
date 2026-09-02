@@ -8,7 +8,7 @@ require_once __DIR__ . '/../includes/auth.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo isset($titulo_pagina) ? $titulo_pagina . ' - VolX' : 'VolX - Seu Serviço de Eletricidade'; ?></title>
+    <title><?php echo isset($titulo_pagina) ? $titulo_pagina . ' - VoltX' : 'VoltX - Seu Serviço de Eletricidade'; ?></title>
     <link rel="stylesheet" href="/assets/css/style.css">
     <?php foreach (($estilos_pagina ?? []) as $estilo): ?>
         <link rel="stylesheet" href="<?php echo htmlspecialchars($estilo, ENT_QUOTES, 'UTF-8'); ?>">
@@ -23,7 +23,7 @@ require_once __DIR__ . '/../includes/auth.php';
     <header>
         <div class="container">
             <a href="/" class="logo" aria-label="Voltar para a página inicial">
-                <img src="/assets/img/logo.svg" alt="VolX">
+                <img src="/assets/img/logo.svg" alt="VoltX">
                 <h1>Vol<span>X</span></h1>
             </a>
             <button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false">☰</button>

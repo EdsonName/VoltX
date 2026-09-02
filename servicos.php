@@ -16,15 +16,17 @@ $imagens = [
 require_once __DIR__ . '/includes/header.php';
 ?>
 <section class="services-page"><div class="container">
-    <header class="services-heading"><span class="eyebrow">Soluções VolX</span><h1>Nossos Serviços</h1><p>Atendimento rápido em Brasília e Entorno Sul — Valparaíso, Luziânia, Novo Gama e região.</p></header>
+    <header class="services-heading"><span class="eyebrow">Soluções VoltX</span><h1>Nossos Serviços</h1><p>Atendimento rápido em Brasília e Entorno Sul — Valparaíso, Luziânia, Novo Gama e região.</p></header>
     <?php if ($servicos): ?><div class="services-catalog">
     <?php foreach ($servicos as $indice => $servico):
-        $emergencia = stripos($servico['nome'], 'emerg') !== false || stripos($servico['nome'], '24h') !== false;
-        $mensagem = 'Olá Edson! Vi no site VolX e gostaria de um orçamento para: ' . $servico['nome'] . '.';
+        $emergencia = !empty($servico['destaque_emergencia']) || stripos($servico['nome'], 'emerg') !== false || stripos($servico['nome'], '24h') !== false;
+        $imagem = !empty($servico['imagem_url']) ? $servico['imagem_url'] : $imagens[$indice % count($imagens)];
+        $beneficios = array_values(array_filter(array_map('trim', preg_split('/\R/', $servico['beneficios'] ?? ''))));
+        $mensagem = 'Olá Edson! Vi no site VoltX e gostaria de um orçamento para: ' . $servico['nome'] . '.';
     ?>
         <article class="catalog-card <?php echo $emergencia ? 'is-emergency' : ''; ?>" style="--delay:<?php echo min($indice,8)*70; ?>ms">
-            <div class="catalog-image"><img src="<?php echo $imagens[$indice % count($imagens)]; ?>" alt="Serviço de <?php echo sanitizar($servico['nome']); ?>" loading="lazy"><span class="catalog-badge"><?php echo $emergencia ? 'Atendimento urgente' : 'Profissional'; ?></span></div>
-            <div class="catalog-body"><div><h2><span class="service-icon">⚡</span><?php echo sanitizar($servico['nome']); ?></h2><div class="catalog-price">A partir de R$ <?php echo number_format($servico['preco'],2,',','.'); ?></div><p><?php echo sanitizar($servico['descricao']); ?></p><ul class="service-facts"><li><span>✓</span> Duração estimada: <?php echo (int)$servico['duracao_minutos']; ?> minutos</li><li><span>✓</span> Atendimento com segurança e garantia</li></ul></div>
+            <div class="catalog-image"><img src="<?php echo sanitizar($imagem); ?>" alt="Serviço de <?php echo sanitizar($servico['nome']); ?>" loading="lazy"><span class="catalog-badge"><?php echo sanitizar($servico['selo'] ?: ($emergencia ? 'Atendimento urgente' : 'Profissional')); ?></span></div>
+            <div class="catalog-body"><div><h2><span class="service-icon">⚡</span><?php echo sanitizar($servico['nome']); ?></h2><div class="catalog-price">A partir de R$ <?php echo number_format($servico['preco'],2,',','.'); ?></div><p><?php echo sanitizar($servico['descricao']); ?></p><ul class="service-facts"><?php if ($beneficios): foreach (array_slice($beneficios,0,3) as $beneficio): ?><li><span>✓</span> <?php echo sanitizar($beneficio); ?></li><?php endforeach; else: ?><li><span>✓</span> Duração estimada: <?php echo (int)$servico['duracao_minutos']; ?> minutos</li><li><span>✓</span> Atendimento com segurança e garantia</li><?php endif; ?></ul></div>
                 <div class="catalog-actions"><a class="whatsapp-button" href="https://wa.me/<?php echo $whatsapp; ?>?text=<?php echo rawurlencode($mensagem); ?>" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">◉</span> Pedir no WhatsApp</a><a class="details-link" href="/servico-detalhes.php?id=<?php echo (int)$servico['id']; ?>">Ver detalhes →</a></div>
             </div>
         </article>

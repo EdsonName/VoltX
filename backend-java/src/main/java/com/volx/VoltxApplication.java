@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class VolxApplication {
+public class VoltxApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(VolxApplication.class, args);
+        SpringApplication.run(VoltxApplication.class, args);
     }
 
 }

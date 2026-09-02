@@ -19,7 +19,7 @@ app.add_middleware(
 
 @app.get("/")
 def read_root():
-    return {"message": "VolX Python Backend - FastAPI", "version": API_VERSION}
+    return {"message": "VoltX Python Backend - FastAPI", "version": API_VERSION}
 
 @app.get("/health")
 def health_check():

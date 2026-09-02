@@ -7,7 +7,7 @@ load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL", "mysql+mysqlconnector://root:root@localhost:3306/volx_db")
 
 # API
-API_TITLE = "VolX API - Python Backend"
+API_TITLE = "VoltX API - Python Backend"
 API_VERSION = "1.0.0"
 API_DESCRIPTION = "API para processamento de dados, workers e serviços assincronos"
 

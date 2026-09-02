@@ -1,4 +1,4 @@
-# Projeto VolX - Estrutura Monorepo
+# Projeto VoltX - Estrutura Monorepo
 
 Projeto completo com Frontend React, Backend Java (Spring Boot) e Backend Python (FastAPI).
 

@@ -25,7 +25,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; <?php echo date('Y'); ?> VolX. Todos os direitos reservados.</p>
+                <p>&copy; <?php echo date('Y'); ?> VoltX. Todos os direitos reservados.</p>
                 <span>Energia que move você.</span>
             </div>
         </div>

@@ -1,4 +1,4 @@
-# VolX - Site de Serviços de Eletricidade
+# VoltX - Site de Serviços de Eletricidade
 
 Projeto completo desenvolvido em **PHP puro** com **MySQL**, seguindo estrutura profissional e modularizada.
 

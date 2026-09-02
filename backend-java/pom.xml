@@ -10,8 +10,8 @@
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>VolX API - Java Backend</name>
-    <description>API REST para o projeto VolX usando Spring Boot</description>
+    <name>VoltX API - Java Backend</name>
+    <description>API REST para o projeto VoltX usando Spring Boot</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>

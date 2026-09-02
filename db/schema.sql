@@ -1,4 +1,4 @@
-# VolX Database Schema
+# VoltX Database Schema
 
 ## Tabela: usuarios
 CREATE TABLE usuarios (
@@ -19,6 +19,10 @@ CREATE TABLE servicos (
     descricao LONGTEXT,
     preco DECIMAL(10, 2) NOT NULL,
     duracao_minutos INT,
+    imagem_url VARCHAR(1000),
+    selo VARCHAR(80),
+    beneficios TEXT,
+    destaque_emergencia BOOLEAN DEFAULT FALSE,
     ativo BOOLEAN DEFAULT TRUE,
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -69,5 +73,5 @@ CREATE TABLE posts_blog (
 -- Login: admin@volx.com | Senha temporária: Admin@123
 -- Troque a senha antes de publicar o sistema.
 INSERT INTO usuarios (nome, email, senha, telefone, tipo)
-VALUES ('Administrador VolX', 'admin@volx.com', '$2y$10$gs/E/5Xvt9Ydeble4WY9DeOuTXh8DkblZhCtWvmKh2xU1P3VWY4bO', '(11) 9999-9999', 'admin')
+VALUES ('Administrador VoltX', 'admin@volx.com', '$2y$10$gs/E/5Xvt9Ydeble4WY9DeOuTXh8DkblZhCtWvmKh2xU1P3VWY4bO', '(11) 9999-9999', 'admin')
 ON DUPLICATE KEY UPDATE tipo = 'admin';

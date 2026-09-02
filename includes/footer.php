@@ -12,7 +12,7 @@
                 </div>
                 <div class="footer-section">
                     <h3>Contato</h3>
-                    <p>contato@voltx.com<br>(11) 9999-9999<br>Seg–Sex, 8h às 18h</p>
+                    <p><?php echo sanitizar(config_site('email_contato', 'contato@voltx.com')); ?><br><?php echo sanitizar(config_site('telefone_contato', '(11) 9999-9999')); ?><br><?php echo sanitizar(config_site('horario_atendimento', 'Seg–Sex, 8h às 18h')); ?></p>
                 </div>
                 <div class="footer-section">
                     <h3>Links</h3>

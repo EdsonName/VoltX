@@ -16,7 +16,7 @@ require_once __DIR__ . '/includes/header.php';
                 <a href="/servicos.php" class="btn btn-secondary">Conhecer serviços →</a>
             </div>
             <div class="hero-trust">
-                <div class="trust-item"><strong>+10 anos</strong><span>de experiência</span></div>
+                <div class="trust-item"><strong>+<?php echo (int)config_site('experiencia_anos', '10'); ?> anos</strong><span>de experiência</span></div>
                 <div class="trust-item"><strong>100%</strong><span>serviços garantidos</span></div>
                 <div class="trust-item"><strong>Ágil</strong><span>atendimento técnico</span></div>
             </div>

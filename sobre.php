@@ -9,10 +9,10 @@ require_once __DIR__ . '/includes/header.php';
     <h1>Sobre VoltX</h1>
     <div class="content">
         <h2>Quem Somos</h2>
-        <p>A VoltX é uma empresa especializada em soluções de eletricidade com mais de 10 anos de experiência no mercado.</p>
+        <p><?php echo sanitizar(config_site('texto_sobre')); ?> São mais de <?php echo (int)config_site('experiencia_anos', '10'); ?> anos de experiência no mercado.</p>
         
         <h2>Nossa Missão</h2>
-        <p>Oferecer serviços elétricos de qualidade, com segurança e profissionalismo.</p>
+        <p><?php echo sanitizar(config_site('missao')); ?></p>
         
         <h2>Por que escolher a VoltX?</h2>
         <ul>

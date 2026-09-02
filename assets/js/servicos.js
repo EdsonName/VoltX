@@ -6,12 +6,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('[data-whatsapp-estimate]')?.addEventListener('click', event => {
         const cidade = document.querySelector('#calc-cidade')?.value;
         const servico = document.querySelector('#calc-servico')?.value;
-        abrirWhatsapp(event.currentTarget.dataset.phone, `Olá Edson! Fiz uma simulação no site VoltX.\n\nRegião: ${cidade}\nServiço: ${servico}\n\nGostaria de receber uma estimativa.`);
+        abrirWhatsapp(event.currentTarget.dataset.phone, `Olá ${event.currentTarget.dataset.contactName}! Fiz uma simulação no site VoltX.\n\nRegião: ${cidade}\nServiço: ${servico}\n\nGostaria de receber uma estimativa.`);
     });
 
     document.querySelector('[data-whatsapp-urgent]')?.addEventListener('click', event => {
         const sintoma = document.querySelector('#diag-sintoma')?.value;
-        abrirWhatsapp(event.currentTarget.dataset.phone, `ALERTA URGENTE - VOLTX\n\nOlá Edson, estou com o seguinte problema: ${sintoma}. Pode me atender agora?`);
+        abrirWhatsapp(event.currentTarget.dataset.phone, `ALERTA URGENTE - VOLTX\n\nOlá ${event.currentTarget.dataset.contactName}, estou com o seguinte problema: ${sintoma}. Pode me atender agora?`);
     });
 
     document.querySelectorAll('.service-flip-card').forEach(card => {

@@ -36,6 +36,11 @@ verificarAdmin();
             <h3>Gerenciar Clientes</h3>
             <p>Visualizar e gerenciar clientes</p>
         </a>
+
+        <a href="/admin/perfil.php" class="card">
+            <h3>Minha Conta e Contatos</h3>
+            <p>Atualizar seus dados e informações exibidas no site</p>
+        </a>
     </div>
 </div>
 

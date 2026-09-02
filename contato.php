@@ -3,6 +3,8 @@
 // Página de contato
 $titulo_pagina = 'Contato';
 require_once __DIR__ . '/includes/header.php';
+$whatsapp_contato = preg_replace('/\D/', '', config_site('whatsapp'));
+if ($whatsapp_contato && !str_starts_with($whatsapp_contato, '55')) $whatsapp_contato = '55' . $whatsapp_contato;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome = htmlspecialchars($_POST['nome']);
@@ -20,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="container">
     <div class="form-container">
         <h1>Fale Conosco</h1>
+        <div class="contact-details"><p><strong>E-mail:</strong> <a href="mailto:<?php echo sanitizar(config_site('email_contato')); ?>"><?php echo sanitizar(config_site('email_contato')); ?></a></p><p><strong>Telefone:</strong> <?php echo sanitizar(config_site('telefone_contato')); ?></p><p><strong>Atendimento:</strong> <?php echo sanitizar(config_site('horario_atendimento')); ?></p><?php if ($whatsapp_contato): ?><a class="btn" href="https://wa.me/<?php echo $whatsapp_contato; ?>" target="_blank" rel="noopener noreferrer">Falar pelo WhatsApp</a><?php endif; ?></div>
         
         <?php if (isset($sucesso)): ?>
             <div class="alerta alerta-sucesso"><?php echo $sucesso; ?></div>

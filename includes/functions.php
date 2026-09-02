@@ -73,6 +73,23 @@ function url_interna_segura($url, $padrao = '/') {
     return $url;
 }
 
+function configuracoes_site() {
+    static $configuracoes = null;
+    global $mysqli;
+    if ($configuracoes !== null) return $configuracoes;
+    $configuracoes = [];
+    $resultado = $mysqli->query('SELECT chave, valor FROM configuracoes_site');
+    if ($resultado) {
+        foreach ($resultado->fetch_all(MYSQLI_ASSOC) as $item) $configuracoes[$item['chave']] = $item['valor'];
+    }
+    return $configuracoes;
+}
+
+function config_site($chave, $padrao = '') {
+    $configuracoes = configuracoes_site();
+    return $configuracoes[$chave] ?? $padrao;
+}
+
 function pegar_servico($id) {
     global $mysqli;
     $sql = 'SELECT * FROM servicos WHERE id = ? AND ativo = 1 AND pausado = 0';

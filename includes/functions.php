@@ -5,7 +5,7 @@
 require_once __DIR__ . '/../config/database.php';
 
 function sanitizar($dados) {
-    return htmlspecialchars($dados, ENT_QUOTES, 'UTF-8');
+    return htmlspecialchars((string)($dados ?? ''), ENT_QUOTES, 'UTF-8');
 }
 
 function validar_email($email) {

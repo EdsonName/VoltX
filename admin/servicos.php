@@ -38,8 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $arquivo = $_FILES['imagem_arquivo'];
                 if ($arquivo['error'] !== UPLOAD_ERR_OK) {
                     $erros[] = 'Não foi possível enviar a imagem. Tente novamente.';
-                } elseif ($arquivo['size'] > 5 * 1024 * 1024) {
-                    $erros[] = 'A imagem deve ter no máximo 5 MB.';
                 } else {
                     $mime = (new finfo(FILEINFO_MIME_TYPE))->file($arquivo['tmp_name']);
                     $extensoes = ['image/jpeg'=>'jpg', 'image/png'=>'png', 'image/webp'=>'webp'];
@@ -123,7 +121,7 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="form-group form-span"><label for="descricao">Descrição</label><textarea id="descricao" name="descricao" rows="4" required><?php echo sanitizar($servico_edicao['descricao'] ?? ''); ?></textarea></div>
             <div class="form-group form-span"><label for="imagem_url">URL da imagem</label><input id="imagem_url" name="imagem_url" type="url" placeholder="https://exemplo.com/imagem.jpg" value="<?php echo sanitizar($servico_edicao['imagem_url'] ?? ''); ?>"><small>Use uma imagem horizontal, preferencialmente 700 × 400 px.</small></div>
             <div class="upload-divider form-span"><span>ou</span></div>
-            <div class="form-group form-span"><label for="imagem_arquivo">Enviar foto do computador</label><label class="file-upload" for="imagem_arquivo"><span class="file-upload-icon">↥</span><span><strong>Escolher uma imagem</strong><small>JPG, PNG ou WebP — máximo de 5 MB</small></span></label><input class="file-input" id="imagem_arquivo" name="imagem_arquivo" type="file" accept="image/jpeg,image/png,image/webp"></div>
+            <div class="form-group form-span"><label for="imagem_arquivo">Enviar foto do computador</label><label class="file-upload" for="imagem_arquivo"><span class="file-upload-icon">↥</span><span><strong>Escolher uma imagem</strong><small>JPG, PNG ou WebP — imagens 4K são aceitas</small></span></label><input class="file-input" id="imagem_arquivo" name="imagem_arquivo" type="file" accept="image/jpeg,image/png,image/webp"></div>
             <div class="form-group"><label for="preco">Preço (R$)</label><input id="preco" name="preco" type="number" min="0" step="0.01" value="<?php echo sanitizar($servico_edicao['preco'] ?? ''); ?>" required></div>
             <div class="form-group"><label for="duracao">Duração (minutos)</label><input id="duracao" name="duracao_minutos" type="number" min="1" value="<?php echo sanitizar($servico_edicao['duracao_minutos'] ?? ''); ?>" required></div>
             <div class="form-group form-span"><label for="selo">Selo do card</label><input id="selo" name="selo" maxlength="80" placeholder="Ex.: Mais pedido, Segurança, Atendimento 24h" value="<?php echo sanitizar($servico_edicao['selo'] ?? ''); ?>"></div>

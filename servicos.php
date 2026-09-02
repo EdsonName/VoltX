@@ -1,6 +1,6 @@
 <?php
 $titulo_pagina = 'Serviços';
-$estilos_pagina = ['/assets/css/servicos.css?v=4'];
+$estilos_pagina = ['/assets/css/servicos.css?v=5'];
 $scripts_pagina = ['/assets/js/servicos.js'];
 require_once __DIR__ . '/includes/functions.php';
 $servicos = pegar_servicos();
@@ -28,7 +28,7 @@ require_once __DIR__ . '/includes/header.php';
     ?>
         <article class="catalog-card <?php echo $emergencia ? 'is-emergency' : ''; ?> <?php echo $pausado ? 'is-paused' : ''; ?>" style="--delay:<?php echo min($indice,8)*70; ?>ms" <?php echo $pausado ? 'aria-disabled="true"' : ''; ?>>
             <div class="catalog-image"><img src="<?php echo sanitizar($imagem); ?>" alt="Serviço de <?php echo sanitizar($servico['nome']); ?>" loading="lazy"><span class="catalog-badge"><?php echo $pausado ? 'Temporariamente pausado' : sanitizar($servico['selo'] ?: ($emergencia ? 'Atendimento urgente' : 'Profissional')); ?></span></div>
-            <div class="catalog-body"><div><h2><span class="service-icon">⚡</span><?php echo sanitizar($servico['nome']); ?></h2><div class="catalog-price">A partir de R$ <?php echo number_format($servico['preco'],2,',','.'); ?></div><p><?php echo sanitizar($servico['descricao']); ?></p><ul class="service-facts"><?php if ($beneficios): foreach (array_slice($beneficios,0,3) as $beneficio): ?><li><span>✓</span> <?php echo sanitizar($beneficio); ?></li><?php endforeach; else: ?><li><span>✓</span> Duração estimada: <?php echo (int)$servico['duracao_minutos']; ?> minutos</li><li><span>✓</span> Atendimento com segurança e garantia</li><?php endif; ?></ul></div>
+            <div class="catalog-body"><div><h2><span class="service-icon">⚡</span><?php echo sanitizar($servico['nome']); ?></h2><div class="price-row"><div class="catalog-price">A partir de R$ <?php echo number_format($servico['preco'],2,',','.'); ?></div><span class="estimated-price-badge" title="Este é um valor médio. O preço final pode variar conforme a avaliação do serviço."><i></i> Valor estimado</span></div><p><?php echo sanitizar($servico['descricao']); ?></p><ul class="service-facts"><?php if ($beneficios): foreach (array_slice($beneficios,0,3) as $beneficio): ?><li><span>✓</span> <?php echo sanitizar($beneficio); ?></li><?php endforeach; else: ?><li><span>✓</span> Duração estimada: <?php echo (int)$servico['duracao_minutos']; ?> minutos</li><li><span>✓</span> Atendimento com segurança e garantia</li><?php endif; ?></ul></div>
                 <div class="catalog-actions"><?php if ($pausado): ?><span class="paused-message">Serviço indisponível no momento</span><?php else: ?><a class="whatsapp-button" href="https://wa.me/<?php echo $whatsapp; ?>?text=<?php echo rawurlencode($mensagem); ?>" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">◉</span> Pedir no WhatsApp</a><a class="details-link" href="/servico-detalhes.php?id=<?php echo (int)$servico['id']; ?>">Ver detalhes →</a><?php endif; ?></div>
             </div>
         </article>

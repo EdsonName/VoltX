@@ -1,6 +1,6 @@
 <?php
 $titulo_pagina = 'Serviços';
-$estilos_pagina = ['/assets/css/servicos.css'];
+$estilos_pagina = ['/assets/css/servicos.css?v=2'];
 $scripts_pagina = ['/assets/js/servicos.js'];
 require_once __DIR__ . '/includes/functions.php';
 $servicos = pegar_servicos();

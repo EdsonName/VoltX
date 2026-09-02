@@ -24,7 +24,7 @@ require_once __DIR__ . '/../includes/auth.php';
         <div class="container">
             <a href="/" class="logo" aria-label="Voltar para a página inicial">
                 <img src="/assets/img/logo.svg" alt="VoltX">
-                <h1>Vol<span>X</span></h1>
+                <h1>Volt<span>X</span></h1>
             </a>
             <button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false">☰</button>
             <nav aria-label="Navegação principal">

@@ -7,12 +7,12 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section footer-brand">
-                    <a href="/" class="logo"><img src="/assets/img/logo.svg" alt=""><h1>Vol<span>X</span></h1></a>
+                    <a href="/" class="logo"><img src="/assets/img/logo.svg" alt="VoltX"><h1>Volt<span>X</span></h1></a>
                     <p>Energia segura, atendimento ágil e soluções elétricas feitas para durar.</p>
                 </div>
                 <div class="footer-section">
                     <h3>Contato</h3>
-                    <p>contato@volx.com<br>(11) 9999-9999<br>Seg–Sex, 8h às 18h</p>
+                    <p>contato@voltx.com<br>(11) 9999-9999<br>Seg–Sex, 8h às 18h</p>
                 </div>
                 <div class="footer-section">
                     <h3>Links</h3>

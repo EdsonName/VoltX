@@ -8,7 +8,11 @@ require_once __DIR__ . '/../includes/auth.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#090a0c">
     <title><?php echo isset($titulo_pagina) ? $titulo_pagina . ' - VoltX' : 'VoltX - Seu Serviço de Eletricidade'; ?></title>
+    <link rel="icon" href="/assets/img/favicon.svg?v=1" type="image/svg+xml">
+    <link rel="alternate icon" href="/assets/img/favicon.svg?v=1">
+    <link rel="mask-icon" href="/assets/img/favicon-mask.svg?v=1" color="#ffd400">
     <link rel="stylesheet" href="/assets/css/style.css">
     <?php foreach (($estilos_pagina ?? []) as $estilo): ?>
         <link rel="stylesheet" href="<?php echo htmlspecialchars($estilo, ENT_QUOTES, 'UTF-8'); ?>">

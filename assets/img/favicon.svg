@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="volt" x1="12" y1="8" x2="50" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff36a"/>
+      <stop offset=".48" stop-color="#ffd400"/>
+      <stop offset="1" stop-color="#ff8a00"/>
+    </linearGradient>
+    <filter id="glow" x="-70%" y="-70%" width="240%" height="240%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="#0a0b0e"/>
+  <circle cx="32" cy="32" r="23" fill="none" stroke="#292c34" stroke-width="2"/>
+  <g class="spark" filter="url(#glow)">
+    <path d="M32 7c2.8 14.1 6.9 20 20 25-13.1 5-17.2 10.9-20 25-2.8-14.1-6.9-20-20-25 13.1-5 17.2-10.9 20-25Z" fill="url(#volt)"/>
+    <path d="m35 16-11 19h8l-3 14 12-20h-8l2-13Z" fill="#0a0b0e"/>
+  </g>
+  <circle class="pulse" cx="32" cy="32" r="25" fill="none" stroke="#ffd400" stroke-width="2" opacity="0"/>
+  <style>
+    .spark{transform-box:fill-box;transform-origin:center;animation:spark 1.8s ease-in-out infinite}
+    .pulse{transform-box:fill-box;transform-origin:center;animation:pulse 1.8s ease-out infinite}
+    @keyframes spark{0%,100%{transform:scale(.9);opacity:.82}45%{transform:scale(1.06);opacity:1}55%{transform:scale(1);opacity:1}}
+    @keyframes pulse{0%{transform:scale(.65);opacity:.75}75%,100%{transform:scale(1.18);opacity:0}}
+    @media(prefers-reduced-motion:reduce){.spark,.pulse{animation:none}.spark{opacity:1}}
+  </style>
+</svg>

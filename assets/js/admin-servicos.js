@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const frente = card.querySelector('.service-card-front');
         const verso = card.querySelector('.service-card-back');
         const definirEstado = aberto => {
-            card.classList.toggle('is-flipped', aberto);
+            card.classList.toggle('is-editing', aberto);
             frente?.setAttribute('aria-hidden', String(aberto));
             verso?.setAttribute('aria-hidden', String(!aberto));
             (aberto ? verso?.querySelector('input[name="nome"]') : abrir)?.focus();
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
         abrir?.addEventListener('click', () => definirEstado(true));
         fechar?.addEventListener('click', () => definirEstado(false));
         card.addEventListener('keydown', event => {
-            if (event.key === 'Escape' && card.classList.contains('is-flipped')) definirEstado(false);
+            if (event.key === 'Escape' && card.classList.contains('is-editing')) definirEstado(false);
         });
     });
 

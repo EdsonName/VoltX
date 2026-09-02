@@ -1,7 +1,7 @@
 <?php
 $titulo_pagina = 'Gerenciar Serviços';
 $estilos_pagina = ['/assets/css/servicos.css?v=6'];
-$scripts_pagina = ['/assets/js/admin-servicos.js?v=2'];
+$scripts_pagina = ['/assets/js/admin-servicos.js?v=3'];
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/functions.php';
 verificarAdmin();

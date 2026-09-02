@@ -16,6 +16,7 @@ if (usuario_autenticado()) verificarAutenticacao();
     <link rel="alternate icon" href="/assets/img/favicon.svg?v=1">
     <link rel="mask-icon" href="/assets/img/favicon-mask.svg?v=1" color="#ffd400">
         <link rel="stylesheet" href="/assets/css/style.css?v=3">
+        <link rel="stylesheet" href="/assets/css/compact.css?v=1">
     <?php foreach (($estilos_pagina ?? []) as $estilo): ?>
         <link rel="stylesheet" href="<?php echo htmlspecialchars($estilo, ENT_QUOTES, 'UTF-8'); ?>">
     <?php endforeach; ?>

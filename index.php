@@ -1,61 +1,26 @@
 <?php
-// index.php
-// Página inicial
 $titulo_pagina = 'Home';
+$estilos_pagina = ['/assets/css/home.css?v=1'];
+require_once __DIR__ . '/includes/functions.php';
+$servicos_home = array_values(array_filter(pegar_servicos(), fn($servico) => empty($servico['pausado'])));
+$whatsapp = preg_replace('/\D/', '', config_site('whatsapp', '5561981044986'));
+if ($whatsapp && !str_starts_with($whatsapp, '55')) $whatsapp = '55' . $whatsapp;
+$responsavel = config_site('responsavel', 'Equipe VoltX');
+$regiao = config_site('regiao_atendimento', 'Distrito Federal e Entorno');
+$horario = config_site('horario_atendimento', 'Seg–Sex, 8h às 18h');
+$mensagem_whatsapp = rawurlencode('Olá ' . $responsavel . '! Vim pelo site da VoltX e gostaria de falar sobre um serviço elétrico.');
 require_once __DIR__ . '/includes/header.php';
 ?>
-
-<section class="hero">
-    <div class="container">
-        <div class="hero-content">
-            <span class="eyebrow">Especialistas em elétrica</span>
-            <h1>Energia segura.<br><span>Resultado potente.</span></h1>
-            <p>Instalação, manutenção e reparos elétricos com profissionais qualificados, agilidade e garantia.</p>
-            <div class="hero-actions">
-                <a href="/orcamento.php" class="btn btn-primary">⚡ Solicitar orçamento</a>
-                <a href="/servicos.php" class="btn btn-secondary">Conhecer serviços →</a>
-            </div>
-            <div class="hero-trust">
-                <div class="trust-item"><strong>+<?php echo (int)config_site('experiencia_anos', '10'); ?> anos</strong><span>de experiência</span></div>
-                <div class="trust-item"><strong>100%</strong><span>serviços garantidos</span></div>
-                <div class="trust-item"><strong>Ágil</strong><span>atendimento técnico</span></div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="servicos-preview">
-    <div class="container">
-        <div class="section-heading">
-            <div><span class="eyebrow">O que fazemos</span><h2>Soluções para cada necessidade</h2></div>
-            <p>Do reparo emergencial ao projeto completo, cuidamos de cada detalhe com segurança e transparência.</p>
-        </div>
-        <div class="servicos-grid">
-            <?php
-            require_once __DIR__ . '/includes/functions.php';
-            $servicos = pegar_servicos();
-            foreach ($servicos as $servico):
-            ?>
-                <div class="servico-card">
-                    <h3><?php echo sanitizar($servico['nome']); ?></h3>
-                    <p><?php echo sanitizar(substr($servico['descricao'], 0, 100)); ?>...</p>
-                    <p class="preco">R$ <?php echo number_format($servico['preco'], 2, ',', '.'); ?></p>
-                    <a href="/servico-detalhes.php?id=<?php echo $servico['id']; ?>" class="btn">Ver detalhes →</a>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    </div>
-</section>
-
-<section class="section">
-    <div class="container">
-        <div class="form-container">
-            <span class="eyebrow">Precisa de ajuda?</span>
-            <h2>Seu projeto começa com uma boa conversa.</h2>
-            <p style="margin:16px 0 24px">Conte o que você precisa e receba uma orientação clara, sem compromisso.</p>
-            <a href="/contato.php" class="btn">Falar com a VoltX →</a>
-        </div>
-    </div>
-</section>
-
+<div class="container home-page">
+    <section class="home-hero">
+        <div class="home-hero-copy"><span class="home-badge"><b>⚡</b> Atendimento especializado em <?php echo sanitizar($regiao); ?></span><h1>Energia segura.<br><span>Resultado potente.</span></h1><p>Instalações elétricas residenciais e comerciais, manutenção e reparos executados com segurança, transparência e garantia.</p><div class="home-actions"><a class="home-whatsapp" href="https://wa.me/<?php echo $whatsapp; ?>?text=<?php echo $mensagem_whatsapp; ?>" target="_blank" rel="noopener noreferrer"><span>◉</span> WhatsApp rápido</a><a class="home-outline" href="/servicos.php"><span>▣</span> Agendar online</a></div></div>
+        <aside class="home-duty-card"><div class="home-duty-status"><i></i> Atendimento disponível na sua região</div><div class="home-duty-icon">⚡</div><h2>Eletricista profissional</h2><p>Atendimento técnico em <?php echo sanitizar($regiao); ?>.</p><div class="home-duty-hours"><span>◷</span><div><small>Horário de atendimento</small><strong><?php echo sanitizar($horario); ?></strong></div></div></aside>
+    </section>
+    <section class="home-stats" aria-label="Diferenciais da VoltX"><div><strong>+<?php echo (int)config_site('experiencia_anos', '10'); ?> anos</strong><span>Experiência técnica</span></div><div><strong><?php echo count($servicos_home); ?></strong><span>Soluções disponíveis</span></div><div><strong>100%</strong><span>Garantia e segurança</span></div><div><strong>NBR 5410</strong><span>Padrão técnico rigoroso</span></div></section>
+    <section class="home-services">
+        <header class="home-section-heading"><div><span>NOSSAS ESPECIALIDADES</span><h2>Nossas soluções elétricas</h2></div><p>Serviços planejados e executados com transparência e valores médios claros.</p></header>
+        <?php if ($servicos_home): ?><div class="home-services-grid"><?php foreach (array_slice($servicos_home, 0, 6) as $servico): $descricao=trim($servico['descricao'] ?? ''); $destino='/agendar.php?servico_id='.(int)$servico['id']; $link_agendar=usuario_autenticado() ? $destino : '/cadastro.php?redirect='.rawurlencode($destino); ?><article class="home-service-card"><div><span class="home-service-icon">⚡</span><h3><?php echo sanitizar($servico['nome']); ?></h3><p><?php echo sanitizar(mb_strimwidth($descricao,0,145,'…')); ?></p><strong class="home-service-price">A partir de R$ <?php echo number_format($servico['preco'],2,',','.'); ?></strong></div><a href="<?php echo sanitizar($link_agendar); ?>">Agendar agora <span>→</span></a></article><?php endforeach; ?></div><a class="home-all-services" href="/servicos.php">Ver todos os serviços <span>→</span></a><?php else: ?><div class="home-empty"><span>⚡</span><h3>Novos serviços em breve</h3><p>Enquanto isso, fale diretamente com nossa equipe.</p></div><?php endif; ?>
+    </section>
+    <section class="home-callout"><div><span>ATENDIMENTO DIRETO</span><h2>Precisa de um orçamento personalizado?</h2><p>Envie uma foto ou vídeo do problema pelo WhatsApp e receba uma orientação inicial, sem compromisso.</p></div><a class="home-whatsapp" href="https://wa.me/<?php echo $whatsapp; ?>?text=<?php echo $mensagem_whatsapp; ?>" target="_blank" rel="noopener noreferrer"><span>◉</span> Falar com a VoltX</a></section>
+</div>
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

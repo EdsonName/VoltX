@@ -1,6 +1,6 @@
 <?php
 $titulo_pagina = 'Gerenciar Serviços';
-$estilos_pagina = ['/assets/css/servicos.css?v=3'];
+$estilos_pagina = ['/assets/css/servicos.css?v=4'];
 $scripts_pagina = ['/assets/js/admin-servicos.js'];
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/functions.php';
@@ -76,12 +76,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $servico_edicao = compact('id','nome','descricao','preco','imagem_url','selo','beneficios','destaque_emergencia','ativo');
             $servico_edicao['duracao_minutos'] = $duracao;
-        } elseif ($acao === 'alternar' && $id > 0) {
+        } elseif ($acao === 'estado' && $id > 0) {
             global $mysqli;
-            $stmt = $mysqli->prepare('UPDATE servicos SET ativo=NOT ativo WHERE id=?');
-            $stmt->bind_param('i', $id);
+            $estado = $_POST['estado'] ?? '';
+            $estados = [
+                'publicar' => [1, 0, 'Serviço publicado e disponível.'],
+                'pausar' => [1, 1, 'Serviço pausado temporariamente.'],
+                'ocultar' => [0, 0, 'Serviço ocultado da página pública.'],
+            ];
+            if (!isset($estados[$estado])) {
+                mensagem_erro('Estado de serviço inválido.');
+                redirecionar('/admin/servicos.php');
+            }
+            [$ativo_estado, $pausado_estado, $mensagem_estado] = $estados[$estado];
+            $stmt = $mysqli->prepare('UPDATE servicos SET ativo=?, pausado=? WHERE id=?');
+            $stmt->bind_param('iii', $ativo_estado, $pausado_estado, $id);
             $stmt->execute();
-            mensagem_sucesso('Visibilidade do serviço atualizada.');
+            mensagem_sucesso($mensagem_estado);
             redirecionar('/admin/servicos.php');
         }
     }
@@ -141,9 +152,13 @@ require_once __DIR__ . '/../includes/header.php';
     ?>
         <article class="catalog-card admin-service-card <?php echo !empty($servico['destaque_emergencia']) ? 'is-emergency' : ''; ?>">
             <a class="card-edit-link" href="?editar=<?php echo (int)$servico['id']; ?>" aria-label="Editar <?php echo sanitizar($servico['nome']); ?>"></a>
-            <div class="catalog-image"><img src="<?php echo sanitizar($imagem_card); ?>" alt="<?php echo sanitizar($servico['nome']); ?>" loading="lazy"><span class="catalog-badge"><?php echo sanitizar($servico['selo'] ?: 'Profissional'); ?></span><span class="admin-card-status <?php echo $servico['ativo'] ? 'is-active' : ''; ?>"><?php echo $servico['ativo'] ? 'Publicado' : 'Oculto'; ?></span></div>
+            <div class="catalog-image"><img src="<?php echo sanitizar($imagem_card); ?>" alt="<?php echo sanitizar($servico['nome']); ?>" loading="lazy"><span class="catalog-badge"><?php echo sanitizar($servico['selo'] ?: 'Profissional'); ?></span><span class="admin-card-status <?php echo !$servico['ativo'] ? 'is-hidden' : (!empty($servico['pausado']) ? 'is-paused' : 'is-active'); ?>"><?php echo !$servico['ativo'] ? 'Oculto' : (!empty($servico['pausado']) ? 'Pausado' : 'Publicado'); ?></span></div>
             <div class="catalog-body"><div><h2><span class="service-icon">⚡</span><?php echo sanitizar($servico['nome']); ?></h2><div class="catalog-price">A partir de R$ <?php echo number_format($servico['preco'],2,',','.'); ?></div><p><?php echo sanitizar($servico['descricao']); ?></p><ul class="service-facts"><?php if ($beneficios_card): foreach (array_slice($beneficios_card,0,2) as $beneficio): ?><li><span>✓</span><?php echo sanitizar($beneficio); ?></li><?php endforeach; else: ?><li><span>✓</span><?php echo (int)$servico['duracao_minutos']; ?> minutos</li><?php endif; ?></ul></div>
-                <div class="admin-card-actions"><span class="edit-hint">✎ Clique para editar</span><form method="POST"><input type="hidden" name="csrf_token" value="<?php echo token_csrf(); ?>"><input type="hidden" name="acao" value="alternar"><input type="hidden" name="id" value="<?php echo (int)$servico['id']; ?>"><button class="visibility-button" type="submit"><?php echo $servico['ativo'] ? 'Ocultar' : 'Publicar'; ?></button></form></div>
+                <div class="admin-card-actions"><span class="edit-hint">✎ Clique para editar</span><div class="state-actions">
+                    <?php if (!$servico['ativo'] || !empty($servico['pausado'])): ?><form method="POST"><input type="hidden" name="csrf_token" value="<?php echo token_csrf(); ?>"><input type="hidden" name="acao" value="estado"><input type="hidden" name="estado" value="publicar"><input type="hidden" name="id" value="<?php echo (int)$servico['id']; ?>"><button class="visibility-button publish" type="submit">Publicar</button></form><?php endif; ?>
+                    <?php if ($servico['ativo'] && empty($servico['pausado'])): ?><form method="POST"><input type="hidden" name="csrf_token" value="<?php echo token_csrf(); ?>"><input type="hidden" name="acao" value="estado"><input type="hidden" name="estado" value="pausar"><input type="hidden" name="id" value="<?php echo (int)$servico['id']; ?>"><button class="visibility-button pause" type="submit">Pausar</button></form><?php endif; ?>
+                    <?php if ($servico['ativo']): ?><form method="POST"><input type="hidden" name="csrf_token" value="<?php echo token_csrf(); ?>"><input type="hidden" name="acao" value="estado"><input type="hidden" name="estado" value="ocultar"><input type="hidden" name="id" value="<?php echo (int)$servico['id']; ?>"><button class="visibility-button hide" type="submit">Ocultar</button></form><?php endif; ?>
+                </div></div>
             </div>
         </article>
     <?php endforeach; ?></div>

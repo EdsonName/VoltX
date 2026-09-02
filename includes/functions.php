@@ -70,7 +70,7 @@ function validar_csrf($token) {
 
 function pegar_servico($id) {
     global $mysqli;
-    $sql = 'SELECT * FROM servicos WHERE id = ? AND ativo = 1';
+    $sql = 'SELECT * FROM servicos WHERE id = ? AND ativo = 1 AND pausado = 0';
     $stmt = $mysqli->prepare($sql);
     $stmt->bind_param('i', $id);
     $stmt->execute();

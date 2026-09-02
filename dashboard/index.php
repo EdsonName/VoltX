@@ -15,6 +15,10 @@ $usuario = pegar_usuario($_SESSION['usuario_id']);
     <h1>Bem-vindo, <?php echo sanitizar($usuario['nome']); ?>!</h1>
     
     <div class="dashboard-menu">
+        <?php if (usuario_eh_profissional()): ?>
+        <a href="/dashboard/profissional.php" class="card"><h3>Meu Perfil Profissional</h3><p>Editar apresentação e área de atendimento</p></a>
+        <a href="/dashboard/ofertas.php" class="card"><h3>Meus Serviços</h3><p>Cadastrar e gerenciar suas ofertas</p></a>
+        <?php endif; ?>
         <a href="/dashboard/agendamentos.php" class="card">
             <h3>Meus Agendamentos</h3>
             <p>Gerenciar seus agendamentos</p>

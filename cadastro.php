@@ -6,6 +6,7 @@ require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/includes/functions.php';
 $redirect = url_interna_segura($_POST['redirect'] ?? $_GET['redirect'] ?? '/dashboard/', '/dashboard/');
+$tipo_inicial = ($_POST['tipo'] ?? $_GET['tipo'] ?? 'cliente') === 'profissional' ? 'profissional' : 'cliente';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome = sanitizar($_POST['nome']);
@@ -13,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $telefone = sanitizar($_POST['telefone']);
     $senha = $_POST['senha'];
     $confirmar_senha = $_POST['confirmar_senha'];
+    $tipo = ($_POST['tipo'] ?? 'cliente') === 'profissional' ? 'profissional' : 'cliente';
     
     $erros = [];
     
@@ -43,7 +45,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $senha_hash = hash_senha($senha);
             $sql = 'INSERT INTO usuarios (nome, email, telefone, senha, tipo) VALUES (?, ?, ?, ?, ?)';
-            $tipo = 'cliente';
             $stmt = $mysqli->prepare($sql);
             $stmt->bind_param('sssss', $nome, $email, $telefone, $senha_hash, $tipo);
             
@@ -51,10 +52,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 session_regenerate_id(true);
                 $_SESSION['usuario_id'] = $stmt->insert_id;
                 $_SESSION['usuario_nome'] = $nome;
-                $_SESSION['tipo_usuario'] = 'cliente';
+                $_SESSION['tipo_usuario'] = $tipo;
                 $_SESSION['login_em'] = time();
                 mensagem_sucesso('Conta criada com sucesso! Seus dados já foram preenchidos.');
-                redirecionar($redirect);
+                redirecionar($tipo === 'profissional' ? '/dashboard/profissional.php' : $redirect);
             } else {
                 $erros[] = 'Erro ao cadastrar. Tente novamente.';
             }
@@ -81,6 +82,13 @@ require_once __DIR__ . '/includes/header.php';
         
         <form method="POST" action="/cadastro.php">
             <input type="hidden" name="redirect" value="<?php echo sanitizar($redirect); ?>">
+            <div class="form-group">
+                <label>Como você deseja usar a VoltX?</label>
+                <div class="account-type-options">
+                    <label><input type="radio" name="tipo" value="cliente" <?php echo $tipo_inicial === 'cliente' ? 'checked' : ''; ?>><span><strong>Quero contratar</strong><small>Encontrar profissionais e serviços.</small></span></label>
+                    <label><input type="radio" name="tipo" value="profissional" <?php echo $tipo_inicial === 'profissional' ? 'checked' : ''; ?>><span><strong>Quero trabalhar</strong><small>Criar meu perfil e oferecer serviços.</small></span></label>
+                </div>
+            </div>
             <div class="form-group">
                 <label for="nome">Nome Completo:</label>
                 <input type="text" id="nome" name="nome" required>

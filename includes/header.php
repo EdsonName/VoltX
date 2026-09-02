@@ -14,7 +14,7 @@ require_once __DIR__ . '/../includes/functions.php';
     <link rel="icon" href="/assets/img/favicon.svg?v=1" type="image/svg+xml">
     <link rel="alternate icon" href="/assets/img/favicon.svg?v=1">
     <link rel="mask-icon" href="/assets/img/favicon-mask.svg?v=1" color="#ffd400">
-    <link rel="stylesheet" href="/assets/css/style.css?v=2">
+        <link rel="stylesheet" href="/assets/css/style.css?v=3">
     <?php foreach (($estilos_pagina ?? []) as $estilo): ?>
         <link rel="stylesheet" href="<?php echo htmlspecialchars($estilo, ENT_QUOTES, 'UTF-8'); ?>">
     <?php endforeach; ?>
@@ -36,6 +36,7 @@ require_once __DIR__ . '/../includes/functions.php';
                 <ul>
                     <li><a href="/">Home</a></li>
                     <li><a href="/servicos.php">Serviços</a></li>
+                    <li><a href="/profissionais.php">Profissionais</a></li>
                     <li><a href="/blog/">Blog</a></li>
                     <li><a href="/contato.php">Contato</a></li>
                     

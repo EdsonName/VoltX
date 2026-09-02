@@ -51,4 +51,17 @@ function usuario_autenticado() {
 function usuario_eh_admin() {
     return isset($_SESSION['tipo_usuario']) && $_SESSION['tipo_usuario'] === 'admin';
 }
+
+function usuario_eh_profissional() {
+    return isset($_SESSION['tipo_usuario']) && $_SESSION['tipo_usuario'] === 'profissional';
+}
+
+function verificarProfissional() {
+    verificarAutenticacao();
+    if (!usuario_eh_profissional()) {
+        $_SESSION['erro'] = 'Esta área é exclusiva para profissionais.';
+        header('Location: /dashboard/');
+        exit;
+    }
+}
 ?>

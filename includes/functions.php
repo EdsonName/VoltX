@@ -53,6 +53,22 @@ function pegar_servicos() {
     return $result->fetch_all(MYSQLI_ASSOC);
 }
 
+function pegar_perfil_profissional_por_usuario($usuario_id) {
+    global $mysqli;
+    $stmt = $mysqli->prepare('SELECT p.*, u.nome, u.email, u.telefone FROM profissionais p JOIN usuarios u ON u.id=p.usuario_id WHERE p.usuario_id=? LIMIT 1');
+    $stmt->bind_param('i', $usuario_id);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_assoc();
+}
+
+function pegar_perfil_profissional($id) {
+    global $mysqli;
+    $stmt = $mysqli->prepare('SELECT p.*, u.nome, u.telefone FROM profissionais p JOIN usuarios u ON u.id=p.usuario_id WHERE p.id=? AND p.ativo=1 LIMIT 1');
+    $stmt->bind_param('i', $id);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_assoc();
+}
+
 function pegar_todos_servicos() {
     global $mysqli;
     $result = $mysqli->query('SELECT * FROM servicos ORDER BY criado_em DESC, nome');

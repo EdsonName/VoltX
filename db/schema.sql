@@ -7,7 +7,7 @@ CREATE TABLE usuarios (
     email VARCHAR(255) UNIQUE NOT NULL,
     senha VARCHAR(255) NOT NULL,
     telefone VARCHAR(20),
-    tipo ENUM('cliente', 'admin') DEFAULT 'cliente',
+    tipo ENUM('cliente', 'profissional', 'admin') DEFAULT 'cliente',
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -73,6 +73,41 @@ CREATE TABLE posts_blog (
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (autor_id) REFERENCES usuarios(id)
+);
+
+## Tabela: profissionais
+CREATE TABLE profissionais (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT UNIQUE NOT NULL,
+    titulo_profissional VARCHAR(160) NOT NULL,
+    bio TEXT,
+    categoria_principal VARCHAR(100) NOT NULL,
+    cidade VARCHAR(120) NOT NULL,
+    uf CHAR(2) NOT NULL,
+    foto_url VARCHAR(1000),
+    atende_online BOOLEAN DEFAULT FALSE,
+    verificado BOOLEAN DEFAULT FALSE,
+    ativo BOOLEAN DEFAULT TRUE,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    INDEX idx_profissionais_local (cidade, uf, ativo)
+);
+
+## Tabela: ofertas_profissionais
+CREATE TABLE ofertas_profissionais (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    profissional_id INT NOT NULL,
+    nome VARCHAR(180) NOT NULL,
+    categoria VARCHAR(100) NOT NULL,
+    descricao TEXT NOT NULL,
+    preco_inicial DECIMAL(10,2),
+    unidade_preco VARCHAR(60) DEFAULT 'por serviço',
+    ativo BOOLEAN DEFAULT TRUE,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (profissional_id) REFERENCES profissionais(id) ON DELETE CASCADE,
+    INDEX idx_ofertas_busca (categoria, ativo)
 );
 
 ## Tabela: configuracoes_site

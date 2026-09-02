@@ -1,0 +1,3 @@
+ALTER TABLE usuarios ADD COLUMN cpf CHAR(11) NULL UNIQUE AFTER telefone, ADD COLUMN foto_perfil VARCHAR(1000) NULL AFTER cpf;
+ALTER TABLE publicacoes_profissionais ADD COLUMN tags VARCHAR(500) NULL AFTER imagem_url;
+CREATE TABLE IF NOT EXISTS amizades (id INT AUTO_INCREMENT PRIMARY KEY, solicitante_id INT NOT NULL, destinatario_id INT NOT NULL, status ENUM('pendente','aceita','recusada','bloqueada') DEFAULT 'pendente', criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP, atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, UNIQUE KEY amizade_unica(solicitante_id,destinatario_id), FOREIGN KEY(solicitante_id) REFERENCES usuarios(id) ON DELETE CASCADE, FOREIGN KEY(destinatario_id) REFERENCES usuarios(id) ON DELETE CASCADE);

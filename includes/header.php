@@ -18,6 +18,7 @@ require_once __DIR__ . '/../includes/functions.php';
     <?php foreach (($estilos_pagina ?? []) as $estilo): ?>
         <link rel="stylesheet" href="<?php echo htmlspecialchars($estilo, ENT_QUOTES, 'UTF-8'); ?>">
     <?php endforeach; ?>
+    <?php if (parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) === '/profissional.php'): ?><link rel="stylesheet" href="/assets/css/social-profile.css?v=1"><?php endif; ?>
     <?php if (usuario_eh_admin()): ?>
         <link rel="stylesheet" href="/assets/css/admin.css?v=5">
     <?php elseif (usuario_autenticado()): ?>

@@ -7,6 +7,8 @@ CREATE TABLE usuarios (
     email VARCHAR(255) UNIQUE NOT NULL,
     senha VARCHAR(255) NOT NULL,
     telefone VARCHAR(20),
+    cpf CHAR(11) UNIQUE,
+    foto_perfil VARCHAR(1000),
     tipo ENUM('cliente', 'profissional', 'admin') DEFAULT 'cliente',
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -135,11 +137,12 @@ CREATE TABLE mensagens (
 );
 
 ## Tabelas: feed e reputação
-CREATE TABLE publicacoes_profissionais (id INT AUTO_INCREMENT PRIMARY KEY, profissional_id INT NOT NULL, conteudo TEXT NOT NULL, imagem_url VARCHAR(1000), ativo BOOLEAN DEFAULT TRUE, criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (profissional_id) REFERENCES profissionais(id) ON DELETE CASCADE);
+CREATE TABLE publicacoes_profissionais (id INT AUTO_INCREMENT PRIMARY KEY, profissional_id INT NOT NULL, conteudo TEXT NOT NULL, imagem_url VARCHAR(1000), tags VARCHAR(500), ativo BOOLEAN DEFAULT TRUE, criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (profissional_id) REFERENCES profissionais(id) ON DELETE CASCADE);
 CREATE TABLE curtidas_publicacoes (publicacao_id INT NOT NULL, usuario_id INT NOT NULL, criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY(publicacao_id,usuario_id), FOREIGN KEY(publicacao_id) REFERENCES publicacoes_profissionais(id) ON DELETE CASCADE, FOREIGN KEY(usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE);
 CREATE TABLE comentarios_publicacoes (id INT AUTO_INCREMENT PRIMARY KEY, publicacao_id INT NOT NULL, usuario_id INT NOT NULL, comentario VARCHAR(1000) NOT NULL, criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(publicacao_id) REFERENCES publicacoes_profissionais(id) ON DELETE CASCADE, FOREIGN KEY(usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE);
 CREATE TABLE avaliacoes_profissionais (id INT AUTO_INCREMENT PRIMARY KEY, profissional_id INT NOT NULL, cliente_id INT NOT NULL, nota TINYINT NOT NULL, comentario VARCHAR(1000), criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP, atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, UNIQUE KEY avaliacao_unica(profissional_id,cliente_id), FOREIGN KEY(profissional_id) REFERENCES profissionais(id) ON DELETE CASCADE, FOREIGN KEY(cliente_id) REFERENCES usuarios(id) ON DELETE CASCADE);
 CREATE TABLE anuncios_profissionais (id INT AUTO_INCREMENT PRIMARY KEY, profissional_id INT NOT NULL, titulo VARCHAR(180) NOT NULL, texto VARCHAR(500), imagem_url VARCHAR(1000), link_url VARCHAR(1000), status ENUM('rascunho','pendente','aprovado','rejeitado','encerrado') DEFAULT 'pendente', inicio_em DATETIME, fim_em DATETIME, criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(profissional_id) REFERENCES profissionais(id) ON DELETE CASCADE);
+CREATE TABLE amizades (id INT AUTO_INCREMENT PRIMARY KEY, solicitante_id INT NOT NULL, destinatario_id INT NOT NULL, status ENUM('pendente','aceita','recusada','bloqueada') DEFAULT 'pendente', criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP, atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, UNIQUE KEY amizade_unica(solicitante_id,destinatario_id), FOREIGN KEY(solicitante_id) REFERENCES usuarios(id) ON DELETE CASCADE, FOREIGN KEY(destinatario_id) REFERENCES usuarios(id) ON DELETE CASCADE);
 
 ## Tabela: configuracoes_site
 CREATE TABLE configuracoes_site (

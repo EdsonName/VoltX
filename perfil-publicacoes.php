@@ -1,0 +1,2 @@
+<?php
+require_once __DIR__.'/includes/functions.php';header('Content-Type: application/json; charset=utf-8');$id=(int)($_GET['id']??0);$stmt=$mysqli->prepare('SELECT id,conteudo,imagem_url,tags,criado_em FROM publicacoes_profissionais WHERE profissional_id=? AND ativo=1 ORDER BY criado_em DESC LIMIT 30');$stmt->bind_param('i',$id);$stmt->execute();echo json_encode(['publicacoes'=>$stmt->get_result()->fetch_all(MYSQLI_ASSOC)],JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);

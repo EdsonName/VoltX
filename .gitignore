@@ -24,6 +24,12 @@ assets/uploads/services/*
 !assets/uploads/about/
 assets/uploads/about/*
 !assets/uploads/about/.gitkeep
+!assets/uploads/profiles/
+assets/uploads/profiles/*
+!assets/uploads/profiles/.gitkeep
+!assets/uploads/posts/
+assets/uploads/posts/*
+!assets/uploads/posts/.gitkeep
 
 # IDE and operating system
 .idea/

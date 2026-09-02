@@ -3,7 +3,7 @@
 // Página de cadastro
 $titulo_pagina = 'Cadastro';
 $estilos_pagina = ['/assets/css/cadastro.css?v=1'];
-$scripts_pagina = ['/assets/js/cadastro.js?v=1'];
+$scripts_pagina = ['/assets/js/cadastro.js?v=1','/assets/js/cpf.js?v=1'];
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/includes/functions.php';
@@ -14,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome = normalizar_nome($_POST['nome'] ?? '');
     $email = normalizar_email($_POST['email'] ?? '');
     $telefone = normalizar_telefone_br($_POST['telefone'] ?? '');
+    $cpf = preg_replace('/\D/', '', $_POST['cpf'] ?? '');
     $senha = $_POST['senha'];
     $confirmar_senha = $_POST['confirmar_senha'];
     $tipo = ($_POST['tipo'] ?? 'cliente') === 'profissional' ? 'profissional' : 'cliente';
@@ -28,6 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $erros[] = 'E-mail inválido ou incompatível com as regras do provedor.';
     }
     if (!in_array(strlen($telefone), [10, 11], true)) $erros[] = 'Informe um telefone brasileiro com DDD.';
+    if (!validar_cpf($cpf)) $erros[] = 'Informe um CPF válido.';
     
     if (!senha_forte($senha)) {
         $erros[] = 'A senha deve ter 8 caracteres, letra maiúscula, minúscula, número e caractere especial.';
@@ -47,9 +49,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $erros[] = 'Email já cadastrado';
         } else {
             $senha_hash = hash_senha($senha);
-            $sql = 'INSERT INTO usuarios (nome, email, telefone, senha, tipo) VALUES (?, ?, ?, ?, ?)';
+            $sql = 'INSERT INTO usuarios (nome, email, telefone, cpf, senha, tipo) VALUES (?, ?, ?, ?, ?, ?)';
             $stmt = $mysqli->prepare($sql);
-            $stmt->bind_param('sssss', $nome, $email, $telefone, $senha_hash, $tipo);
+            $stmt->bind_param('ssssss', $nome, $email, $telefone, $cpf, $senha_hash, $tipo);
             
             if ($stmt->execute()) {
                 session_regenerate_id(true);
@@ -106,6 +108,7 @@ require_once __DIR__ . '/includes/header.php';
                 <label for="telefone">Telefone:</label>
                 <input type="tel" id="telefone" name="telefone" value="<?php echo sanitizar($_POST['telefone'] ?? ''); ?>" inputmode="tel" autocomplete="tel" required>
             </div>
+            <div class="form-group"><label for="cpf">CPF:</label><input type="text" id="cpf" name="cpf" value="<?php echo sanitizar($_POST['cpf'] ?? ''); ?>" inputmode="numeric" pattern="[0-9]{11}" maxlength="11" autocomplete="off" required><small>Somente números. Não poderá ser alterado após o cadastro.</small></div>
             
             <div class="form-group">
                 <label for="senha">Senha:</label>

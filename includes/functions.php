@@ -52,6 +52,15 @@ function senha_forte($senha) {
     return strlen($senha) >= 8 && preg_match('/[A-Z]/', $senha) && preg_match('/[a-z]/', $senha) && preg_match('/\d/', $senha) && preg_match('/[^A-Za-z0-9]/', $senha);
 }
 
+function validar_cpf($cpf) {
+    $cpf = preg_replace('/\D/', '', (string)$cpf);
+    if (strlen($cpf) !== 11 || preg_match('/^(\d)\1{10}$/', $cpf)) return false;
+    for ($t=9; $t<11; $t++) { $soma=0; for ($i=0; $i<$t; $i++) $soma += (int)$cpf[$i] * (($t+1)-$i); if ((int)$cpf[$t] !== ((10*$soma)%11)%10) return false; }
+    return true;
+}
+
+function mascarar_contato($valor, $visiveis=4) { $valor=(string)$valor; return mb_substr($valor,0,$visiveis).str_repeat('•',max(4,mb_strlen($valor)-$visiveis)); }
+
 function hash_senha($senha) {
     return password_hash($senha, PASSWORD_BCRYPT);
 }
@@ -78,7 +87,7 @@ function executar_query($sql, $tipos = '', $valores = []) {
 
 function pegar_usuario($id) {
     global $mysqli;
-    $sql = 'SELECT id, nome, email, telefone FROM usuarios WHERE id = ?';
+    $sql = 'SELECT id, nome, email, telefone, cpf, foto_perfil, tipo FROM usuarios WHERE id = ?';
     $stmt = $mysqli->prepare($sql);
     $stmt->bind_param('i', $id);
     $stmt->execute();

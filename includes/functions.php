@@ -39,6 +39,14 @@ function normalizar_rotulo($texto) {
     return $texto === '' ? '' : mb_strtoupper(mb_substr($texto,0,1,'UTF-8'),'UTF-8') . mb_substr($texto,1,null,'UTF-8');
 }
 
+function normalizar_url_publicitaria($entrada) {
+    $entrada=trim((string)$entrada);if($entrada==='')return '';
+    if(preg_match('/^\[[^\]]+\]\((https?:\/\/[^\s)]+)\)$/i',$entrada,$link))$entrada=$link[1];
+    if(!preg_match('~^https?://~i',$entrada))$entrada='https://'.$entrada;
+    $partes=parse_url($entrada);if(!$partes||!in_array(strtolower($partes['scheme']??''),['http','https'],true)||empty($partes['host'])||!str_contains($partes['host'],'.'))return false;
+    return $entrada;
+}
+
 function normalizar_telefone_br($telefone) {
     $digitos = preg_replace('/\D/', '', (string)$telefone);
     if (str_starts_with($digitos, '55') && strlen($digitos) >= 12) $digitos = substr($digitos, 2);

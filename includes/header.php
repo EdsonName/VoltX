@@ -3,7 +3,14 @@
 // Cabeçalho do site
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/functions.php';
-if (usuario_autenticado()) verificarAutenticacao();
+$rota_protegida = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+if (str_starts_with($rota_protegida, '/admin/')) {
+    verificarAdmin();
+} elseif (str_starts_with($rota_protegida, '/dashboard/')) {
+    verificarAutenticacao();
+} elseif (usuario_autenticado()) {
+    verificarAutenticacao();
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
